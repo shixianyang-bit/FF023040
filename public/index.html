@@ -419,10 +419,15 @@ function closeSDD(){document.getElementById('sdDP').style.display='none';selS=nu
 function procDaily(rows){
   const all=rows.filter(r=>r[0]).map(r=>{
     const dv=String(r[0]).trim();
-    const pts=dv.split('/');
     let ds=dv;
-    if(pts.length>=3)ds=parseInt(pts[1])+'/'+parseInt(pts[2]);
-    else if(pts.length===2)ds=parseInt(pts[0])+'/'+parseInt(pts[1]);
+    const dtObj=new Date(dv);
+    if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){
+      ds=(dtObj.getMonth()+1)+'/'+(dtObj.getDate());
+    } else {
+      const pts=dv.split('/');
+      if(pts.length>=3)ds=parseInt(pts[1])+'/'+parseInt(pts[2]);
+      else if(pts.length===2)ds=parseInt(pts[0])+'/'+parseInt(pts[1]);
+    }
     return{
       date:ds,
       pcs:pn(r[4])||null,
