@@ -216,7 +216,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
       </div>
       <div class="menu-item" onclick="goPage('page-records')">
         <div class="menu-icon" style="background:#fce4ec">📝</div>
-        <div class="menu-body"><h3>當日記錄</h3><p id="record-count">今日尚無記錄</p></div>
+        <div class="menu-body"><h3>作業記錄</h3><p id="record-count">今日尚無記錄</p></div>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" onclick="exportExcel()">
@@ -329,11 +329,11 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
   </div>
 </div>
 
-<!-- ══ 當日記錄 ══ -->
+<!-- ══ 作業記錄 ══ -->
 <div id="page-records" class="page">
   <div class="topbar">
     <button class="back" onclick="goBack()">‹</button>
-    <span class="title">當日記錄</span>
+    <span class="title">作業記錄</span>
   </div>
   <div class="record-section">
     <div class="record-filter">
@@ -424,6 +424,14 @@ async function loadProducts() {
       document.getElementById('data-status').textContent = `已載入 ${count} 項商品`;
       document.getElementById('user-name-display').textContent = currentUser.name;
       goPage('page-main');
+      // 登入後讀取今日記錄數
+      try {
+        const now = new Date();
+        const today = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+        const rec = await proxyFetch({type:'getRecords', date: today, email: currentUser.email});
+        todayRecords = (rec.records || []).length;
+        updateRecordCount();
+      } catch(e) {}
     } else {
       document.getElementById('login-status').textContent = '⚠ 資料載入失敗，請重試';
     }
@@ -562,7 +570,7 @@ async function confirmSave() {
   pendingSave = null;
 }
 
-// ── 當日記錄 ─────────────────────────────────────────────────
+// ── 作業記錄 ─────────────────────────────────────────────────
 async function loadRecords() {
   const list = document.getElementById("records-list");
   list.innerHTML = '<div class="no-record">載入中...</div>';
@@ -660,8 +668,30 @@ function clearForm(mode) {
 }
 
 // ── 匯出 ─────────────────────────────────────────────────────
-function exportExcel() {
-  showToast('請至 Google Sheets 作業記錄工作表篩選匯出');
+async function exportExcel() {
+  showToast("讀取記錄中...");
+  try {
+    const now = new Date();
+    const today = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+    const d = await proxyFetch({type:"getRecords", date: today, email: currentUser.email});
+    const rows = d.records || [];
+    if (!rows.length) { showToast("今日尚無記錄"); return; }
+    let csv = "\uFEFF日期,時間,員工,類型,商品貨號,商品名稱,數量\n";
+    rows.forEach(r => {
+      csv += `${r.date},${r.time},${r.user},${r.rtype},${r.code},"${r.name}",${r.qty}\n`;
+    });
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const dateStr = today.replace(/\//g, "-");
+    a.download = `元榆作業記錄_${dateStr}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`✓ 已匯出 ${rows.length} 筆記錄`);
+  } catch(e) {
+    showToast("匯出失敗，請重試");
+  }
 }
 
 function updateRecordCount() {
