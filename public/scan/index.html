@@ -10,7 +10,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
   --orange:#fee068;--orange-dark:#d4a000;--orange-text:#3d2e00;
-  --red:#e65100;--red-light:#fff3e0;
+  --red:#ff9800;--red-light:#fff8f0;
   --bg:#f5f5f0;--white:#fff;--border:#e0d8c0;
   --text:#2a2000;--muted:#8a7040;--dim:#c8b880;
 }
@@ -119,7 +119,34 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
 .camera-close{background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer;}
 .camera-hint{position:absolute;bottom:100px;left:0;right:0;text-align:center;color:#fff;font-size:13px;}
 
-/* Toast */
+/* 確認彈窗 */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;align-items:flex-end;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;}
+.modal-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:16px;text-align:center;}
+.modal-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid #f0ead8;font-size:14px;}
+.modal-item:last-of-type{border-bottom:none;}
+.modal-label{color:var(--muted);}
+.modal-value{font-weight:500;}
+.modal-btns{display:flex;gap:10px;margin-top:20px;}
+.modal-btns .btn{margin-bottom:0;flex:1;}
+
+/* 記錄頁面 */
+.record-section{padding:14px;}
+.record-filter{display:flex;gap:8px;margin-bottom:12px;}
+.record-filter select{flex:1;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--white);font-family:inherit;}
+.record-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;}
+.record-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.record-type{font-size:11px;font-weight:500;padding:3px 8px;border-radius:999px;}
+.type-in{background:#fff3cc;color:var(--orange-dark);}
+.type-cnt{background:#fff8f0;color:#ff9800;}
+.record-time{font-size:11px;color:var(--muted);}
+.record-name{font-size:14px;font-weight:500;margin-bottom:4px;}
+.record-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+.record-qty-badge{font-size:16px;font-weight:500;color:var(--orange-dark);}
+.record-del{background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;padding:4px;}
+.record-del:active{color:#e53935;}
+.no-record{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;white-space:nowrap;}
 .toast.show{opacity:1;}
 
@@ -188,6 +215,12 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         <span class="menu-arrow">›</span>
       </div>
     </div>
+      <div class="menu-item" onclick="goPage('page-records')">
+        <div class="menu-icon" style="background:#fce4ec">📝</div>
+        <div class="menu-body"><h3>當日記錄</h3><p id="record-count">今日尚無記錄</p></div>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
     <div class="menu-card">
       <div class="menu-item" onclick="exportExcel()">
         <div class="menu-icon icon-export">📊</div>
@@ -219,8 +252,6 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="in-code"></span></div>
         <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="in-name" style="font-size:13px"></span></div>
         <div class="field-row"><span class="field-label">商品入數</span><span class="field-value">0</span></div>
-        <div class="field-row"><span class="field-label">輔翼庫存</span><span class="field-value" id="in-fu"></span></div>
-        <div class="field-row"><span class="field-label">Z01庫存</span><span class="field-value" id="in-z01"></span></div>
         <div class="field-row"><span class="field-label">生產數量</span><span class="field-value">0</span></div>
         <div class="field-row hl">
           <span class="field-label acc">驗收數量</span>
@@ -301,7 +332,37 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
   </div>
 </div>
 
-<!-- 相機 -->
+<!-- ══ 當日記錄 ══ -->
+<div id="page-records" class="page">
+  <div class="topbar">
+    <button class="back" onclick="goBack()">‹</button>
+    <span class="title">當日記錄</span>
+  </div>
+  <div class="record-section">
+    <div class="record-filter">
+      <select id="filter-type" onchange="loadRecords()">
+        <option value="">全部類型</option>
+        <option value="進貨驗收">進貨驗收</option>
+        <option value="盤點">盤點</option>
+      </select>
+    </div>
+    <div id="records-list"><div class="no-record">載入中...</div></div>
+  </div>
+</div>
+
+<!-- 確認彈窗 -->
+<div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">確認儲存？</div>
+    <div class="modal-item"><span class="modal-label">商品貨號</span><span class="modal-value" id="modal-code"></span></div>
+    <div class="modal-item"><span class="modal-label">商品名稱</span><span class="modal-value" id="modal-name" style="font-size:13px;max-width:180px;text-align:right"></span></div>
+    <div class="modal-item"><span class="modal-label">數量</span><span class="modal-value" id="modal-qty" style="font-size:20px"></span></div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="modal-confirm-btn" onclick="confirmSave()">確認儲存</button>
+    </div>
+  </div>
+</div>
 <div id="camera-overlay" class="camera-overlay">
   <div class="camera-topbar">
     <span style="color:#fff;font-size:14px">對準條碼</span>
@@ -475,27 +536,100 @@ function stopScan() {
   document.getElementById('camera-overlay').classList.remove('active');
 }
 
-// ── 提交記錄 ─────────────────────────────────────────────────
+let pendingSave = null;
+
+// ── 確認彈窗 ─────────────────────────────────────────────────
+function showModal(type, code, name, qty) {
+  pendingSave = {type, code, name, qty};
+  document.getElementById('modal-title').textContent = type === '進貨驗收' ? '確認驗收？' : '確認盤點？';
+  document.getElementById('modal-code').textContent = code;
+  document.getElementById('modal-name').textContent = name;
+  document.getElementById('modal-qty').textContent = qty;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.className = 'btn ' + (type === '進貨驗收' ? 'btn-primary' : 'btn-red');
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('active');
+  pendingSave = null;
+}
+
+async function confirmSave() {
+  if (!pendingSave) return;
+  document.getElementById('modal-overlay').classList.remove('active');
+  await saveRecord(pendingSave.type, pendingSave.code, pendingSave.name, pendingSave.qty);
+  showToast('✓ 記錄已儲存');
+  clearForm(pendingSave.type === '進貨驗收' ? 'in' : 'cnt');
+  pendingSave = null;
+}
+
+// ── 當日記錄 ─────────────────────────────────────────────────
+async function loadRecords() {
+  const list = document.getElementById('records-list');
+  list.innerHTML = '<div class="no-record">載入中...</div>';
+  try {
+    const today = new Date().toLocaleDateString('zh-TW');
+    const filterType = document.getElementById('filter-type').value;
+    const d = await proxyFetch({type:'getRecords', date: today, email: currentUser.email});
+    let rows = d.records || [];
+    if (filterType) rows = rows.filter(r => r.rtype === filterType);
+    if (!rows.length) {
+      list.innerHTML = '<div class="no-record">今日尚無記錄</div>';
+      return;
+    }
+    list.innerHTML = rows.map((r, i) => `
+      <div class="record-card">
+        <div class="record-header">
+          <span class="record-type ${r.rtype==='進貨驗收'?'type-in':'type-cnt'}">${r.rtype}</span>
+          <span class="record-time">${r.time}</span>
+        </div>
+        <div class="record-name">${r.name}</div>
+        <div class="record-meta">
+          <span>${r.code}</span>
+          <span class="record-qty-badge">${r.qty}</span>
+        </div>
+        <div style="text-align:right;margin-top:6px">
+          <button class="record-del" onclick="deleteRecord(${r.row})">🗑</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<div class="no-record">載入失敗</div>';
+  }
+}
+
+async function deleteRecord(row) {
+  if (!confirm('確定刪除這筆記錄？')) return;
+  try {
+    await proxyFetch({type:'deleteRecord', row});
+    showToast('已刪除');
+    loadRecords();
+    todayRecords = Math.max(0, todayRecords - 1);
+    updateRecordCount();
+  } catch(e) {
+    showToast('刪除失敗');
+  }
+}
+
+
 async function submitIn() {
-  const code = document.getElementById('in-code').textContent;
-  const name = document.getElementById('in-name').textContent;
-  const qty = document.getElementById('in-recv').value;
-  if (!code) { showToast('請先選擇商品'); return; }
-  if (!qty || parseFloat(qty) < 0) { showToast('請輸入驗收數量'); return; }
-  await saveRecord('進貨驗收', code, name, qty);
-  showToast('✓ 驗收記錄已儲存');
-  clearForm('in');
+  const code = document.getElementById("in-code").textContent;
+  const name = document.getElementById("in-name").textContent;
+  const qty = document.getElementById("in-recv").value;
+  if (!code) { showToast("請先選擇商品"); return; }
+  if (!qty || parseFloat(qty) < 0) { showToast("請輸入驗收數量"); return; }
+  showModal("進貨驗收", code, name, qty);
 }
 
 async function submitCnt() {
-  const code = document.getElementById('cnt-code').textContent;
-  const name = document.getElementById('cnt-name').textContent;
-  const qty = document.getElementById('cnt-qty').value;
-  if (!code) { showToast('請先選擇商品'); return; }
-  if (!qty || parseFloat(qty) < 0) { showToast('請輸入盤點數量'); return; }
-  await saveRecord('盤點', code, name, qty);
-  showToast('✓ 盤點記錄已儲存');
-  clearForm('cnt');
+  const code = document.getElementById("cnt-code").textContent;
+  const name = document.getElementById("cnt-name").textContent;
+  const qty = document.getElementById("cnt-qty").value;
+  if (!code) { showToast("請先選擇商品"); return; }
+  if (!qty || parseFloat(qty) < 0) { showToast("請輸入盤點數量"); return; }
+  showModal("盤點", code, name, qty);
+}
 }
 
 async function saveRecord(type, code, name, qty) {
