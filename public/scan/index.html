@@ -247,6 +247,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
     <div id="info-in" style="display:none">
       <div class="info-card">
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="in-code"></span></div>
+        <div class="field-row"><span class="field-label">商品條碼</span><span class="field-value" id="in-barcode" style="font-size:12px;color:#8a7040"></span></div>
         <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="in-name" style="font-size:13px"></span></div>
         <div class="field-row"><span class="field-label">商品入數</span><span class="field-value">0</span></div>
         <div class="field-row"><span class="field-label">生產數量</span><span class="field-value">0</span></div>
@@ -280,6 +281,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
     <div id="info-cnt" style="display:none">
       <div class="info-card">
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="cnt-code"></span></div>
+        <div class="field-row"><span class="field-label">商品條碼</span><span class="field-value" id="cnt-barcode" style="font-size:12px;color:#8a7040"></span></div>
         <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="cnt-name" style="font-size:13px"></span></div>
         <div class="field-row hl-red">
           <span class="field-label acc-red">盤點數量</span>
@@ -311,6 +313,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
     <div id="info-inv" style="display:none">
       <div class="info-card" style="margin-bottom:12px">
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="inv-code"></span></div>
+        <div class="field-row"><span class="field-label">商品條碼</span><span class="field-value" id="inv-barcode" style="font-size:12px;color:#8a7040"></span></div>
         <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="inv-name" style="font-size:13px"></span></div>
       </div>
       <div class="info-card">
@@ -481,18 +484,21 @@ function fillInfo(mode, p) {
 
   if (mode === 'in') {
     document.getElementById('in-code').textContent = p.code;
+    document.getElementById('in-barcode').textContent = p.barcode || '';
     document.getElementById('in-name').textContent = p.name;
     document.getElementById('in-recv').value = '';
     document.getElementById('info-in').style.display = 'block';
     setTimeout(() => document.getElementById('in-recv').focus(), 150);
   } else if (mode === 'cnt') {
     document.getElementById('cnt-code').textContent = p.code;
+    document.getElementById('cnt-barcode').textContent = p.barcode || '';
     document.getElementById('cnt-name').textContent = p.name;
     document.getElementById('cnt-qty').value = '';
     document.getElementById('info-cnt').style.display = 'block';
     setTimeout(() => document.getElementById('cnt-qty').focus(), 150);
   } else if (mode === 'inv') {
     document.getElementById('inv-code').textContent = p.code;
+    document.getElementById('inv-barcode').textContent = p.barcode || '';
     document.getElementById('inv-name').textContent = p.name;
     ['a01','b01','b02','z01','fu'].forEach(k => {
       const el = document.getElementById('inv-' + k);
@@ -595,7 +601,7 @@ async function loadRecords() {
       <div class="record-card">
         <div class="record-header">
           <span class="record-type ${r.rtype==="進貨驗收"?"type-in":"type-cnt"}">${r.rtype}</span>
-          <span class="record-time">${r.date} ${r.time}</span>
+          <span class="record-time">${r.date}</span>
         </div>
         <div class="record-name">${r.name}</div>
         <div class="record-meta">
