@@ -4,32 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>元榆倉儲作業</title>
+<script src="https://accounts.google.com/gsi/client" async></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
   --orange:#fee068;--orange-dark:#d4a000;--orange-text:#3d2e00;
-  --red:#e65100;--red-light:#fff3e0;--red-text:#fff;
+  --red:#e65100;--red-light:#fff3e0;
   --bg:#f5f5f0;--white:#fff;--border:#e0d8c0;
   --text:#2a2000;--muted:#8a7040;--dim:#c8b880;
 }
 body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
-
-/* ── 頂部 ── */
-.topbar{background:var(--orange);padding:14px 16px;display:flex;align-items:center;gap:10px;}
-.topbar .back{font-size:20px;cursor:pointer;color:var(--orange-text);background:none;border:none;padding:0;}
-.topbar .title{font-size:16px;font-weight:500;color:var(--orange-text);}
-.topbar.red{background:var(--red);}
-.topbar.red .back,.topbar.red .title{color:#fff;}
-
-/* ── 頁面切換 ── */
 .page{display:none;min-height:100vh;}
 .page.active{display:block;}
 
-/* ── 主選單 ── */
-.main-header{background:var(--orange);padding:20px 16px 24px;}
-.main-header h1{font-size:20px;font-weight:500;color:var(--orange-text);}
-.main-header p{font-size:12px;color:#7a5c00;margin-top:4px;}
+/* 登入 */
+.login-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px;}
+.login-logo{font-size:48px;margin-bottom:16px;}
+.login-title{font-size:22px;font-weight:500;color:var(--orange-text);margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:40px;}
+.login-card{background:var(--white);border-radius:16px;padding:24px;width:100%;max-width:320px;border:1px solid var(--border);text-align:center;}
+.login-hint{font-size:12px;color:var(--muted);margin-top:16px;}
+
+/* Header */
+.topbar{background:var(--orange);padding:14px 16px;display:flex;align-items:center;gap:10px;}
+.topbar .back{font-size:22px;cursor:pointer;color:var(--orange-text);background:none;border:none;padding:0;}
+.topbar .title{font-size:16px;font-weight:500;color:var(--orange-text);flex:1;}
+.topbar.red{background:var(--red);}
+.topbar.red .back,.topbar.red .title{color:#fff;}
+.topbar.blue{background:#1565c0;}
+.topbar.blue .back,.topbar.blue .title{color:#fff;}
+
+/* 主選單 */
+.main-header{background:var(--orange);padding:16px;}
+.main-header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.main-title{font-size:20px;font-weight:500;color:var(--orange-text);}
+.main-sub{font-size:12px;color:#7a5c00;margin-top:3px;}
+.user-info{text-align:right;}
+.user-name{font-size:12px;font-weight:500;color:var(--orange-text);}
+.logout-btn{font-size:11px;color:#7a5c00;background:none;border:none;cursor:pointer;padding:2px 0;}
 .menu-section{padding:14px;}
 .menu-card{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
 .menu-item{display:flex;align-items:center;padding:16px;gap:14px;cursor:pointer;border-bottom:0.5px solid #f0ead8;}
@@ -38,90 +51,124 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
 .menu-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .icon-in{background:#fff3cc;}
 .icon-cnt{background:#ffe0b2;}
+.icon-inv{background:#e8f5e9;}
 .icon-export{background:#e3f2fd;}
 .menu-body{flex:1;}
 .menu-body h3{font-size:15px;font-weight:500;}
 .menu-body p{font-size:12px;color:var(--muted);margin-top:2px;}
-.menu-arrow{color:var(--dim);font-size:18px;}
+.menu-arrow{color:var(--dim);font-size:20px;}
 
-/* ── 掃碼區 ── */
+/* 掃碼/搜尋 */
 .scan-section{padding:14px;}
-.scan-box{border:2px dashed var(--orange-dark);border-radius:14px;background:#fffbe6;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;}
+.scan-box{border:2px dashed var(--orange-dark);border-radius:14px;background:#fffbe6;padding:18px;text-align:center;cursor:pointer;margin-bottom:12px;}
 .scan-box.red-theme{border-color:var(--red);background:var(--red-light);}
-.scan-box svg{width:40px;height:40px;margin-bottom:8px;}
-.scan-box .scan-label{font-size:13px;font-weight:500;color:var(--orange-dark);}
+.scan-box.blue-theme{border-color:#1565c0;background:#e3f2fd;}
+.scan-icon{font-size:36px;margin-bottom:6px;}
+.scan-label{font-size:13px;font-weight:500;color:var(--orange-dark);}
 .scan-box.red-theme .scan-label{color:var(--red);}
+.scan-box.blue-theme .scan-label{color:#1565c0;}
 
-/* 搜尋框 */
 .search-wrap{position:relative;margin-bottom:12px;}
 .search-wrap input{width:100%;padding:12px 44px 12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;background:var(--white);color:var(--text);outline:none;font-family:inherit;}
 .search-wrap input:focus{border-color:var(--orange-dark);}
-.search-wrap .search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;pointer-events:none;}
-.search-results{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:200px;overflow-y:auto;display:none;}
+.search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none;}
+.search-results{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:220px;overflow-y:auto;display:none;position:absolute;left:0;right:0;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
 .search-result-item{padding:12px 14px;border-bottom:0.5px solid #f0ead8;cursor:pointer;font-size:13px;}
 .search-result-item:last-child{border-bottom:none;}
 .search-result-item:active{background:#f9f5e8;}
-.search-result-item .code{font-size:11px;color:var(--muted);}
+.result-name{color:var(--text);}
+.result-code{font-size:11px;color:var(--muted);margin-top:2px;}
 
-/* ── 商品資訊卡 ── */
+/* 商品資訊 */
 .info-card{background:var(--white);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px;}
-.field-row{display:flex;align-items:center;padding:12px 14px;border-bottom:0.5px solid #f5f0e0;gap:10px;}
+.field-row{display:flex;align-items:center;padding:11px 14px;border-bottom:0.5px solid #f5f0e0;gap:10px;}
 .field-row:last-child{border-bottom:none;}
 .field-label{font-size:12px;color:var(--muted);width:72px;flex-shrink:0;}
 .field-value{font-size:14px;color:var(--text);flex:1;}
-.field-row.highlight{background:#fffbe6;}
-.field-row.highlight-red{background:var(--red-light);}
-.field-input{border:none;background:transparent;outline:none;font-size:14px;color:var(--orange-dark);font-weight:500;flex:1;font-family:inherit;text-align:right;width:100%;}
+.field-row.hl{background:#fffbe6;}
+.field-row.hl-red{background:var(--red-light);}
+.field-input{border:none;background:transparent;outline:none;font-size:15px;color:var(--orange-dark);font-weight:500;flex:1;font-family:inherit;text-align:right;width:100%;}
 .field-input.red{color:var(--red);}
-.field-label.accent{color:var(--orange-dark);font-weight:500;}
-.field-label.accent-red{color:var(--red);font-weight:500;}
+.field-label.acc{color:var(--orange-dark);font-weight:500;}
+.field-label.acc-red{color:var(--red);font-weight:500;}
 
-/* ── 按鈕 ── */
-.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+/* 庫存表格 */
+.inv-table{width:100%;border-collapse:collapse;font-size:13px;}
+.inv-table th{background:#f5f0e0;padding:8px 10px;text-align:center;font-weight:500;color:var(--muted);font-size:11px;}
+.inv-table td{padding:10px;text-align:center;border-bottom:0.5px solid #f5f0e0;font-size:14px;font-weight:500;}
+.inv-table tr:last-child td{border-bottom:none;}
+.inv-zero{color:#ccc;}
+.inv-low{color:#e65100;}
+.inv-ok{color:#2e7d32;}
+
+/* 按鈕 */
+.btn{width:100%;padding:15px;border:none;border-radius:12px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;}
 .btn-primary{background:var(--orange);color:var(--orange-text);}
-.btn-primary:active{opacity:0.85;}
 .btn-red{background:var(--red);color:#fff;}
-.btn-red:active{opacity:0.85;}
+.btn-blue{background:#1565c0;color:#fff;}
 .btn-secondary{background:var(--white);color:var(--muted);border:1px solid var(--border);}
 
-/* ── 相機 ── */
+/* 相機 */
 .camera-overlay{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;}
 .camera-overlay.active{display:flex;}
-#camera-view{width:100%;flex:1;object-fit:cover;}
-.camera-guide{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:240px;height:140px;border:2px solid #fee068;border-radius:8px;}
-.camera-topbar{position:absolute;top:0;left:0;right:0;padding:16px;display:flex;justify-content:space-between;align-items:center;}
-.camera-close{background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:20px;cursor:pointer;}
-.camera-hint{position:absolute;bottom:80px;left:0;right:0;text-align:center;color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,0.8);}
 #scanner-container{width:100%;flex:1;position:relative;overflow:hidden;}
 #scanner-container video{width:100%;height:100%;object-fit:cover;}
 #scanner-container canvas{display:none;}
+.camera-guide{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:260px;height:120px;border:2px solid #fee068;border-radius:8px;pointer-events:none;}
+.camera-topbar{position:absolute;top:0;left:0;right:0;padding:16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(rgba(0,0,0,0.5),transparent);}
+.camera-close{background:rgba(0,0,0,0.5);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer;}
+.camera-hint{position:absolute;bottom:100px;left:0;right:0;text-align:center;color:#fff;font-size:13px;}
 
-/* ── 記錄清單 ── */
-.record-list{padding:14px;}
-.record-item{background:var(--white);border-radius:10px;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
-.record-info h4{font-size:13px;font-weight:500;}
-.record-info p{font-size:11px;color:var(--muted);margin-top:2px;}
-.record-qty{font-size:16px;font-weight:500;color:var(--orange-dark);}
-.record-qty.red{color:var(--red);}
-.empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
-
-/* ── Toast ── */
+/* Toast */
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;white-space:nowrap;}
 .toast.show{opacity:1;}
 
-/* ── Loading ── */
-.loading{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;}
-.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--orange-dark);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 10px;}
+.loading-wrap{text-align:center;padding:40px 20px;color:var(--muted);}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--orange-dark);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
+<!-- ══ 登入 ══ -->
+<div id="page-login" class="page active">
+  <div class="login-wrap">
+    <div class="login-logo">🏭</div>
+    <div class="login-title">元榆倉儲作業</div>
+    <div class="login-sub">請登入您的 Google 帳號</div>
+    <div class="login-card">
+      <div id="g_id_onload"
+        data-client_id="YOUR_GOOGLE_CLIENT_ID"
+        data-callback="onGoogleLogin"
+        data-auto_select="false">
+      </div>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="sign_in_with"
+        data-shape="rectangular"
+        data-locale="zh-TW"
+        data-width="260">
+      </div>
+      <div class="login-hint" id="login-status">資料載入中，請稍候...</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ 主選單 ══ -->
-<div id="page-main" class="page active">
+<div id="page-main" class="page">
   <div class="main-header">
-    <h1>元榆 倉儲作業</h1>
-    <p id="data-status">資料載入中...</p>
+    <div class="main-header-top">
+      <div>
+        <div class="main-title">元榆倉儲作業</div>
+        <div class="main-sub" id="data-status">載入中...</div>
+      </div>
+      <div class="user-info">
+        <div class="user-name" id="user-name-display"></div>
+        <button class="logout-btn" onclick="logout()">登出</button>
+      </div>
+    </div>
   </div>
   <div class="menu-section">
     <div class="menu-card">
@@ -135,11 +182,16 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         <div class="menu-body"><h3>盤點作業</h3><p>掃描或搜尋 → 輸入盤點數量</p></div>
         <span class="menu-arrow">›</span>
       </div>
+      <div class="menu-item" onclick="goPage('page-inv')">
+        <div class="menu-icon icon-inv">🔍</div>
+        <div class="menu-body"><h3>庫存查詢</h3><p>掃描或搜尋 → 查看各倉庫存</p></div>
+        <span class="menu-arrow">›</span>
+      </div>
     </div>
     <div class="menu-card">
       <div class="menu-item" onclick="exportExcel()">
         <div class="menu-icon icon-export">📊</div>
-        <div class="menu-body"><h3>匯出 Excel</h3><p id="record-count">今日尚無記錄</p></div>
+        <div class="menu-body"><h3>匯出今日記錄</h3><p id="record-count">今日尚無記錄</p></div>
         <span class="menu-arrow">›</span>
       </div>
     </div>
@@ -154,7 +206,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
   </div>
   <div class="scan-section">
     <div class="scan-box" onclick="startScan('in')">
-      <svg viewBox="0 0 40 40" fill="none"><rect x="2" y="8" width="3" height="24" fill="#d4a000"/><rect x="7" y="8" width="1.5" height="24" fill="#d4a000"/><rect x="10" y="8" width="3" height="24" fill="#d4a000"/><rect x="15" y="8" width="1.5" height="24" fill="#d4a000"/><rect x="18" y="8" width="4" height="24" fill="#d4a000"/><rect x="24" y="8" width="2" height="24" fill="#d4a000"/><rect x="28" y="8" width="3" height="24" fill="#d4a000"/><rect x="33" y="8" width="1.5" height="24" fill="#d4a000"/><rect x="36" y="8" width="2" height="24" fill="#d4a000"/></svg>
+      <div class="scan-icon">📷</div>
       <div class="scan-label">點擊掃描商品條碼</div>
     </div>
     <div class="search-wrap">
@@ -165,18 +217,18 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
     <div id="info-in" style="display:none">
       <div class="info-card">
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="in-code"></span></div>
-        <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="in-name"></span></div>
-        <div class="field-row"><span class="field-label">商品入數</span><span class="field-value" id="in-qty">0</span></div>
+        <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="in-name" style="font-size:13px"></span></div>
+        <div class="field-row"><span class="field-label">商品入數</span><span class="field-value">0</span></div>
         <div class="field-row"><span class="field-label">輔翼庫存</span><span class="field-value" id="in-fu"></span></div>
         <div class="field-row"><span class="field-label">Z01庫存</span><span class="field-value" id="in-z01"></span></div>
         <div class="field-row"><span class="field-label">生產數量</span><span class="field-value">0</span></div>
-        <div class="field-row highlight">
-          <span class="field-label accent">驗收數量</span>
+        <div class="field-row hl">
+          <span class="field-label acc">驗收數量</span>
           <input type="number" class="field-input" id="in-recv" placeholder="輸入數量" min="0">
         </div>
       </div>
       <button class="btn btn-primary" onclick="submitIn()">確認驗收</button>
-      <button class="btn btn-secondary" onclick="clearIn()">清除重新掃描</button>
+      <button class="btn btn-secondary" onclick="clearForm('in')">清除重新掃描</button>
     </div>
   </div>
 </div>
@@ -189,7 +241,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
   </div>
   <div class="scan-section">
     <div class="scan-box red-theme" onclick="startScan('cnt')">
-      <svg viewBox="0 0 40 40" fill="none"><rect x="2" y="8" width="3" height="24" fill="#e65100"/><rect x="7" y="8" width="1.5" height="24" fill="#e65100"/><rect x="10" y="8" width="3" height="24" fill="#e65100"/><rect x="15" y="8" width="1.5" height="24" fill="#e65100"/><rect x="18" y="8" width="4" height="24" fill="#e65100"/><rect x="24" y="8" width="2" height="24" fill="#e65100"/><rect x="28" y="8" width="3" height="24" fill="#e65100"/><rect x="33" y="8" width="1.5" height="24" fill="#e65100"/><rect x="36" y="8" width="2" height="24" fill="#e65100"/></svg>
+      <div class="scan-icon">📷</div>
       <div class="scan-label">點擊掃描商品條碼</div>
     </div>
     <div class="search-wrap">
@@ -200,22 +252,59 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
     <div id="info-cnt" style="display:none">
       <div class="info-card">
         <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="cnt-code"></span></div>
-        <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="cnt-name"></span></div>
-        <div class="field-row highlight-red">
-          <span class="field-label accent-red">盤點數量</span>
-          <input type="number" class="field-input red" id="cnt-qty-input" placeholder="輸入數量" min="0">
+        <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="cnt-name" style="font-size:13px"></span></div>
+        <div class="field-row hl-red">
+          <span class="field-label acc-red">盤點數量</span>
+          <input type="number" class="field-input red" id="cnt-qty" placeholder="輸入數量" min="0">
         </div>
       </div>
       <button class="btn btn-red" onclick="submitCnt()">確認盤點</button>
-      <button class="btn btn-secondary" onclick="clearCnt()">清除重新掃描</button>
+      <button class="btn btn-secondary" onclick="clearForm('cnt')">清除重新掃描</button>
     </div>
   </div>
 </div>
 
-<!-- ══ 相機掃描 ══ -->
+<!-- ══ 庫存查詢 ══ -->
+<div id="page-inv" class="page">
+  <div class="topbar blue">
+    <button class="back" onclick="goBack()">‹</button>
+    <span class="title">庫存查詢</span>
+  </div>
+  <div class="scan-section">
+    <div class="scan-box blue-theme" onclick="startScan('inv')">
+      <div class="scan-icon">📷</div>
+      <div class="scan-label">點擊掃描商品條碼</div>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="search-inv" placeholder="或輸入品號/商品名稱搜尋..." oninput="doSearch('inv')" autocomplete="off">
+      <span class="search-icon">🔍</span>
+      <div class="search-results" id="results-inv"></div>
+    </div>
+    <div id="info-inv" style="display:none">
+      <div class="info-card" style="margin-bottom:12px">
+        <div class="field-row"><span class="field-label">商品貨號</span><span class="field-value" id="inv-code"></span></div>
+        <div class="field-row"><span class="field-label">商品名稱</span><span class="field-value" id="inv-name" style="font-size:13px"></span></div>
+      </div>
+      <div class="info-card">
+        <table class="inv-table">
+          <thead><tr><th>倉別</th><th>庫存數量</th></tr></thead>
+          <tbody>
+            <tr><td>A01</td><td id="inv-a01" class="inv-zero">-</td></tr>
+            <tr><td>B01</td><td id="inv-b01" class="inv-zero">-</td></tr>
+            <tr><td>B02</td><td id="inv-b02" class="inv-zero">-</td></tr>
+            <tr><td>Z01</td><td id="inv-z01" class="inv-zero">-</td></tr>
+            <tr><td>輔翼</td><td id="inv-fu" class="inv-zero">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 相機 -->
 <div id="camera-overlay" class="camera-overlay">
   <div class="camera-topbar">
-    <span style="color:#fff;font-size:14px">對準條碼掃描</span>
+    <span style="color:#fff;font-size:14px">對準條碼</span>
     <button class="camera-close" onclick="stopScan()">✕</button>
   </div>
   <div id="scanner-container"></div>
@@ -223,25 +312,50 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
   <div class="camera-hint">將條碼置於框內</div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbz_KqE5t2O5qoL6wUfAIHGtsb8L79Sblr8JEnC2jLTxA6BZd5AjYa-tqZGPVEK8SSWmyg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz_KqE5t2O5qoL6wUfAIHGtsb8L79Sblr8JEnC2jLTxA6BZd5AjYa-tqZGPVEK8SSWmyg/exec';
 const PROXY = '/.netlify/functions/proxy?url=';
 
-let PRODUCTS = {}; // key: 品號, value: {name, barcode, z01, fu}
-let BARCODE_MAP = {}; // key: 條碼, value: 品號
-let records = JSON.parse(localStorage.getItem('records') || '[]');
+let PRODUCTS = {};
+let BARCODE_MAP = {};
+let currentUser = null;
 let currentMode = 'in';
 let scanActive = false;
+let todayRecords = 0;
 
-// ── 初始化 ──────────────────────────────────────────────────
-async function init() {
+async function proxyFetch(params) {
+  const qs = new URLSearchParams(params).toString();
+  const url = PROXY + encodeURIComponent(API_URL + '?' + qs);
+  const r = await fetch(url, {signal: AbortSignal.timeout(20000)});
+  return r.json();
+}
+
+// ── Google 登入 ──────────────────────────────────────────────
+function onGoogleLogin(response) {
+  const payload = parseJwt(response.credential);
+  currentUser = { name: payload.name, email: payload.email };
+  document.getElementById('login-status').textContent = '登入成功，載入資料中...';
+  loadProducts();
+}
+
+function parseJwt(token) {
+  const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+  return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+}
+
+function logout() {
+  currentUser = null;
+  google.accounts.id.disableAutoSelect();
+  goPage('page-login');
+}
+
+// ── 載入商品 ─────────────────────────────────────────────────
+async function loadProducts() {
   try {
-    const url = PROXY + encodeURIComponent(API + '?type=products');
-    const r = await fetch(url, {signal: AbortSignal.timeout(20000)});
-    const d = await r.json();
+    const d = await proxyFetch({type:'products'});
     if (d.products) {
       d.products.forEach(p => {
         PRODUCTS[p.code] = p;
@@ -249,40 +363,38 @@ async function init() {
       });
       const count = Object.keys(PRODUCTS).length;
       document.getElementById('data-status').textContent = `已載入 ${count} 項商品`;
+      document.getElementById('user-name-display').textContent = currentUser.name;
+      goPage('page-main');
     } else {
-      document.getElementById('data-status').textContent = '⚠ 資料載入失敗';
+      document.getElementById('login-status').textContent = '⚠ 資料載入失敗，請重試';
     }
   } catch(e) {
-    document.getElementById('data-status').textContent = '⚠ 無法連線，請重新整理';
+    document.getElementById('login-status').textContent = '⚠ 無法連線';
   }
-  updateRecordCount();
 }
 
-// ── 頁面切換 ────────────────────────────────────────────────
+// ── 頁面切換 ─────────────────────────────────────────────────
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
 }
-function goBack() {
-  stopScan();
-  goPage('page-main');
-}
+function goBack() { stopScan(); goPage('page-main'); }
 
-// ── 搜尋 ────────────────────────────────────────────────────
+// ── 搜尋 ─────────────────────────────────────────────────────
 function doSearch(mode) {
   const q = document.getElementById('search-' + mode).value.trim().toLowerCase();
   const box = document.getElementById('results-' + mode);
-  if (q.length < 1) { box.style.display = 'none'; return; }
+  if (q.length < 1) { box.style.display='none'; return; }
   const matches = Object.values(PRODUCTS).filter(p =>
     p.code.toLowerCase().includes(q) || p.name.toLowerCase().includes(q)
-  ).slice(0, 10);
-  if (!matches.length) { box.style.display = 'none'; return; }
+  ).slice(0, 12);
+  if (!matches.length) { box.style.display='none'; return; }
   box.innerHTML = matches.map(p =>
     `<div class="search-result-item" onclick="selectProduct('${mode}','${p.code}')">
-      <div>${p.name}</div><div class="code">${p.code}</div>
-    </div>`
-  ).join('');
+      <div class="result-name">${p.name}</div>
+      <div class="result-code">${p.code}${p.barcode?' · '+p.barcode:''}</div>
+    </div>`).join('');
   box.style.display = 'block';
 }
 
@@ -296,34 +408,45 @@ function selectProduct(mode, code) {
 
 // ── 填入商品資訊 ─────────────────────────────────────────────
 function fillInfo(mode, p) {
+  const fmt = v => (v == null || v === 0) ? '0' : Number(v).toLocaleString();
+  const cls = v => v > 0 ? 'inv-ok' : 'inv-zero';
+
   if (mode === 'in') {
     document.getElementById('in-code').textContent = p.code;
     document.getElementById('in-name').textContent = p.name;
-    document.getElementById('in-fu').textContent = p.fu ?? '-';
-    document.getElementById('in-z01').textContent = p.z01 ?? '-';
+    document.getElementById('in-fu').textContent = fmt(p.fu);
+    document.getElementById('in-z01').textContent = fmt(p.z01);
     document.getElementById('in-recv').value = '';
     document.getElementById('info-in').style.display = 'block';
-    setTimeout(() => document.getElementById('in-recv').focus(), 100);
-  } else {
+    setTimeout(() => document.getElementById('in-recv').focus(), 150);
+  } else if (mode === 'cnt') {
     document.getElementById('cnt-code').textContent = p.code;
     document.getElementById('cnt-name').textContent = p.name;
-    document.getElementById('cnt-qty-input').value = '';
+    document.getElementById('cnt-qty').value = '';
     document.getElementById('info-cnt').style.display = 'block';
-    setTimeout(() => document.getElementById('cnt-qty-input').focus(), 100);
+    setTimeout(() => document.getElementById('cnt-qty').focus(), 150);
+  } else if (mode === 'inv') {
+    document.getElementById('inv-code').textContent = p.code;
+    document.getElementById('inv-name').textContent = p.name;
+    ['a01','b01','b02','z01','fu'].forEach(k => {
+      const el = document.getElementById('inv-' + k);
+      el.textContent = fmt(p[k]);
+      el.className = cls(p[k]);
+    });
+    document.getElementById('info-inv').style.display = 'block';
   }
 }
 
-// ── 掃碼 ────────────────────────────────────────────────────
+// ── 掃碼 ─────────────────────────────────────────────────────
 function startScan(mode) {
   currentMode = mode;
   document.getElementById('camera-overlay').classList.add('active');
   scanActive = true;
   Quagga.init({
     inputStream: {
-      name: 'Live',
-      type: 'LiveStream',
+      name: 'Live', type: 'LiveStream',
       target: document.getElementById('scanner-container'),
-      constraints: { facingMode: 'environment', width: {ideal:1280}, height: {ideal:720} }
+      constraints: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }
     },
     decoder: { readers: ['ean_reader','ean_8_reader','code_128_reader','code_39_reader'] },
     locate: true
@@ -331,10 +454,10 @@ function startScan(mode) {
     if (err) { showToast('相機無法開啟'); stopScan(); return; }
     Quagga.start();
   });
-  Quagga.onDetected(onBarcodeDetected);
+  Quagga.onDetected(onDetected);
 }
 
-function onBarcodeDetected(result) {
+function onDetected(result) {
   if (!scanActive) return;
   const code = result.codeResult.code;
   const productCode = BARCODE_MAP[code];
@@ -342,77 +465,73 @@ function onBarcodeDetected(result) {
   if (productCode) {
     fillInfo(currentMode, PRODUCTS[productCode]);
   } else {
-    showToast('找不到條碼對應商品：' + code);
+    showToast('找不到條碼：' + code);
   }
 }
 
 function stopScan() {
   scanActive = false;
-  try { Quagga.offDetected(onBarcodeDetected); Quagga.stop(); } catch(e){}
+  try { Quagga.offDetected(onDetected); Quagga.stop(); } catch(e){}
   document.getElementById('camera-overlay').classList.remove('active');
 }
 
-// ── 提交 ────────────────────────────────────────────────────
-function submitIn() {
+// ── 提交記錄 ─────────────────────────────────────────────────
+async function submitIn() {
   const code = document.getElementById('in-code').textContent;
   const name = document.getElementById('in-name').textContent;
-  const qty = parseFloat(document.getElementById('in-recv').value);
+  const qty = document.getElementById('in-recv').value;
   if (!code) { showToast('請先選擇商品'); return; }
-  if (isNaN(qty) || qty < 0) { showToast('請輸入驗收數量'); return; }
-  records.push({type:'in', code, name, qty, time: new Date().toLocaleString('zh-TW')});
-  saveRecords();
+  if (!qty || parseFloat(qty) < 0) { showToast('請輸入驗收數量'); return; }
+  await saveRecord('進貨驗收', code, name, qty);
   showToast('✓ 驗收記錄已儲存');
-  clearIn();
+  clearForm('in');
 }
 
-function submitCnt() {
+async function submitCnt() {
   const code = document.getElementById('cnt-code').textContent;
   const name = document.getElementById('cnt-name').textContent;
-  const qty = parseFloat(document.getElementById('cnt-qty-input').value);
+  const qty = document.getElementById('cnt-qty').value;
   if (!code) { showToast('請先選擇商品'); return; }
-  if (isNaN(qty) || qty < 0) { showToast('請輸入盤點數量'); return; }
-  records.push({type:'cnt', code, name, qty, time: new Date().toLocaleString('zh-TW')});
-  saveRecords();
+  if (!qty || parseFloat(qty) < 0) { showToast('請輸入盤點數量'); return; }
+  await saveRecord('盤點', code, name, qty);
   showToast('✓ 盤點記錄已儲存');
-  clearCnt();
+  clearForm('cnt');
 }
 
-function clearIn() {
-  document.getElementById('info-in').style.display = 'none';
-  document.getElementById('search-in').value = '';
-}
-function clearCnt() {
-  document.getElementById('info-cnt').style.display = 'none';
-  document.getElementById('search-cnt').value = '';
-}
-
-// ── 匯出 Excel ───────────────────────────────────────────────
-function exportExcel() {
-  if (!records.length) { showToast('尚無記錄可匯出'); return; }
-  const inRecs = records.filter(r => r.type === 'in');
-  const cntRecs = records.filter(r => r.type === 'cnt');
-  let csv = '\uFEFF類型,商品貨號,商品名稱,數量,時間\n';
-  inRecs.forEach(r => csv += `進貨驗收,${r.code},${r.name},${r.qty},${r.time}\n`);
-  cntRecs.forEach(r => csv += `盤點,${r.code},${r.name},${r.qty},${r.time}\n`);
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const today = new Date().toLocaleDateString('zh-TW').replace(/\//g,'-');
-  a.download = `元榆作業記錄_${today}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── 工具 ────────────────────────────────────────────────────
-function saveRecords() {
-  localStorage.setItem('records', JSON.stringify(records));
+async function saveRecord(type, code, name, qty) {
+  const now = new Date();
+  const date = now.toLocaleDateString('zh-TW');
+  const time = now.toLocaleTimeString('zh-TW');
+  todayRecords++;
   updateRecordCount();
+  try {
+    await proxyFetch({
+      type: 'saveRecord',
+      date, time,
+      user: currentUser.name,
+      email: currentUser.email,
+      rtype: type, code, name, qty
+    });
+  } catch(e) {
+    showToast('⚠ 記錄儲存失敗，請檢查網路');
+  }
 }
+
+function clearForm(mode) {
+  document.getElementById('info-' + mode).style.display = 'none';
+  document.getElementById('search-' + mode).value = '';
+}
+
+// ── 匯出 ─────────────────────────────────────────────────────
+function exportExcel() {
+  showToast('請至 Google Sheets 作業記錄工作表篩選匯出');
+}
+
 function updateRecordCount() {
-  const n = records.length;
-  document.getElementById('record-count').textContent = n > 0 ? `今日 ${n} 筆記錄，點擊匯出` : '今日尚無記錄';
+  document.getElementById('record-count').textContent =
+    todayRecords > 0 ? `本次已記錄 ${todayRecords} 筆` : '今日尚無記錄';
 }
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -420,7 +539,8 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-init();
+// 載入時預設顯示登入狀態
+document.getElementById('login-status').textContent = '請使用 Google 帳號登入';
 </script>
 </body>
 </html>
