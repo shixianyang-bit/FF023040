@@ -566,7 +566,8 @@ async function loadRecords() {
   const list = document.getElementById('records-list');
   list.innerHTML = '<div class="no-record">載入中...</div>';
   try {
-    const today = new Date().toLocaleDateString('zh-TW');
+    const now = new Date();
+    const today = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
     const filterType = document.getElementById('filter-type').value;
     const d = await proxyFetch({type:'getRecords', date: today, email: currentUser.email});
     let rows = d.records || [];
@@ -629,7 +630,7 @@ async function submitCnt() {
 
 async function saveRecord(type, code, name, qty) {
   const now = new Date();
-  const date = now.toLocaleDateString('zh-TW');
+  const date = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
   const time = now.toLocaleTimeString('zh-TW');
   todayRecords++;
   updateRecordCount();
