@@ -630,7 +630,6 @@ async function submitCnt() {
   if (!qty || parseFloat(qty) < 0) { showToast("請輸入盤點數量"); return; }
   showModal("盤點", code, name, qty);
 }
-}
 
 async function saveRecord(type, code, name, qty) {
   const now = new Date();
