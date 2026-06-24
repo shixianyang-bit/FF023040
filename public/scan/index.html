@@ -214,17 +214,14 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         <div class="menu-body"><h3>庫存查詢</h3><p>掃描或搜尋 → 查看各倉庫存</p></div>
         <span class="menu-arrow">›</span>
       </div>
-    </div>
       <div class="menu-item" onclick="goPage('page-records')">
         <div class="menu-icon" style="background:#fce4ec">📝</div>
         <div class="menu-body"><h3>當日記錄</h3><p id="record-count">今日尚無記錄</p></div>
         <span class="menu-arrow">›</span>
       </div>
-    </div>
-    <div class="menu-card">
       <div class="menu-item" onclick="exportExcel()">
         <div class="menu-icon icon-export">📊</div>
-        <div class="menu-body"><h3>匯出今日記錄</h3><p id="record-count">今日尚無記錄</p></div>
+        <div class="menu-body"><h3>匯出今日記錄</h3><p>下載今日作業 Excel</p></div>
         <span class="menu-arrow">›</span>
       </div>
     </div>
@@ -439,6 +436,7 @@ function goPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  if (id === 'page-records') loadRecords();
 }
 function goBack() { stopScan(); goPage('page-main'); }
 
@@ -475,8 +473,6 @@ function fillInfo(mode, p) {
   if (mode === 'in') {
     document.getElementById('in-code').textContent = p.code;
     document.getElementById('in-name').textContent = p.name;
-    document.getElementById('in-fu').textContent = fmt(p.fu);
-    document.getElementById('in-z01').textContent = fmt(p.z01);
     document.getElementById('in-recv').value = '';
     document.getElementById('info-in').style.display = 'block';
     setTimeout(() => document.getElementById('in-recv').focus(), 150);
