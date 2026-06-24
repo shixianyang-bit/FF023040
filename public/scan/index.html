@@ -342,6 +342,7 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         <option value="進貨驗收">進貨驗收</option>
         <option value="盤點">盤點</option>
       </select>
+      <input type="date" id="filter-date" onchange="loadRecords()" style="flex:1;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:var(--white);font-family:inherit;">
     </div>
     <div id="records-list"><div class="no-record">載入中...</div></div>
   </div>
@@ -563,24 +564,30 @@ async function confirmSave() {
 
 // ── 當日記錄 ─────────────────────────────────────────────────
 async function loadRecords() {
-  const list = document.getElementById('records-list');
+  const list = document.getElementById("records-list");
   list.innerHTML = '<div class="no-record">載入中...</div>';
   try {
     const now = new Date();
-    const today = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
-    const filterType = document.getElementById('filter-type').value;
-    const d = await proxyFetch({type:'getRecords', date: today, email: currentUser.email});
+    const defaultDate = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+    const filterDateInput = document.getElementById("filter-date").value;
+    let queryDate = defaultDate;
+    if (filterDateInput) {
+      const parts = filterDateInput.split("-");
+      queryDate = `${parseInt(parts[0])}/${parseInt(parts[1])}/${parseInt(parts[2])}`;
+    }
+    const filterType = document.getElementById("filter-type").value;
+    const d = await proxyFetch({type:"getRecords", date: queryDate, email: currentUser.email});
     let rows = d.records || [];
     if (filterType) rows = rows.filter(r => r.rtype === filterType);
     if (!rows.length) {
-      list.innerHTML = '<div class="no-record">今日尚無記錄</div>';
+      list.innerHTML = '<div class="no-record">無記錄</div>';
       return;
     }
     list.innerHTML = rows.map((r, i) => `
       <div class="record-card">
         <div class="record-header">
-          <span class="record-type ${r.rtype==='進貨驗收'?'type-in':'type-cnt'}">${r.rtype}</span>
-          <span class="record-time">${r.time}</span>
+          <span class="record-type ${r.rtype==="進貨驗收"?"type-in":"type-cnt"}">${r.rtype}</span>
+          <span class="record-time">${r.date} ${r.time}</span>
         </div>
         <div class="record-name">${r.name}</div>
         <div class="record-meta">
@@ -590,7 +597,7 @@ async function loadRecords() {
         <div style="text-align:right;margin-top:6px">
           <button class="record-del" onclick="deleteRecord(${r.row})">🗑</button>
         </div>
-      </div>`).join('');
+      </div>`).join("");
   } catch(e) {
     list.innerHTML = '<div class="no-record">載入失敗</div>';
   }
