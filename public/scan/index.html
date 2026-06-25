@@ -417,6 +417,14 @@ function logout() {
 // ── 載入商品 ─────────────────────────────────────────────────
 async function loadProducts() {
   try {
+    // 先驗證帳號是否在白名單
+    const check = await proxyFetch({type:'checkUser', email: currentUser.email});
+    if (!check.allowed) {
+      document.getElementById('login-status').textContent = '⚠ 您的帳號未獲授權，請聯絡管理員';
+      return;
+    }
+    // 白名單姓名優先
+    if (check.userName) currentUser.name = check.userName;
     const d = await proxyFetch({type:'products'});
     if (d.products) {
       d.products.forEach(p => {
