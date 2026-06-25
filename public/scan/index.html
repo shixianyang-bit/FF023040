@@ -169,8 +169,16 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         data-callback="onGoogleLogin"
         data-auto_select="false">
       </div>
-      <button onclick="triggerGoogleLogin()" style="width:100%;padding:14px;background:var(--orange);color:var(--orange-text);border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;">登入</button>
-      <button onclick="window.history.back()" style="width:100%;padding:14px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;">離開</button>
+      <div class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="filled_blue"
+        data-text="sign_in_with"
+        data-shape="rectangular"
+        data-locale="zh-TW"
+        data-width="260">
+      </div>
+      <button onclick="window.history.back()" style="width:100%;padding:14px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:12px;">離開</button>
       <div class="login-hint" id="login-status">請使用 Google 帳號登入</div>
     </div>
   </div>
