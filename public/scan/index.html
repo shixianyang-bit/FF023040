@@ -169,16 +169,9 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         data-callback="onGoogleLogin"
         data-auto_select="false">
       </div>
-      <div class="g_id_signin"
-        data-type="standard"
-        data-size="large"
-        data-theme="outline"
-        data-text="sign_in_with"
-        data-shape="rectangular"
-        data-locale="zh-TW"
-        data-width="260">
-      </div>
-      <div class="login-hint" id="login-status">資料載入中，請稍候...</div>
+      <button onclick="triggerGoogleLogin()" style="width:100%;padding:14px;background:var(--orange);color:var(--orange-text);border:none;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:10px;">登入</button>
+      <button onclick="window.history.back()" style="width:100%;padding:14px;background:var(--white);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;">離開</button>
+      <div class="login-hint" id="login-status">請使用 Google 帳號登入</div>
     </div>
   </div>
 </div>
@@ -395,6 +388,9 @@ async function proxyFetch(params) {
 }
 
 // ── Google 登入 ──────────────────────────────────────────────
+function triggerGoogleLogin() {
+  google.accounts.id.prompt();
+}
 function onGoogleLogin(response) {
   const payload = parseJwt(response.credential);
   currentUser = { name: payload.name, email: payload.email };
@@ -421,6 +417,10 @@ async function loadProducts() {
     const check = await proxyFetch({type:'checkUser', email: currentUser.email});
     if (!check.allowed) {
       document.getElementById('login-status').textContent = '⚠ 您的帳號未獲授權，請聯絡管理員';
+      // 強制回登入頁
+      goPage('page-login');
+      alert('您的帳號（' + currentUser.email + '）未獲授權，請聯絡管理員。');
+      currentUser = null;
       return;
     }
     // 白名單姓名優先
