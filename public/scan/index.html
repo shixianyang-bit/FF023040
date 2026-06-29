@@ -437,7 +437,12 @@ async function loadProducts() {
     if (d.products) {
       d.products.forEach(p => {
         PRODUCTS[p.code] = p;
-        if (p.barcode) BARCODE_MAP[p.barcode] = p.code;
+        if (p.barcode) {
+          BARCODE_MAP[p.barcode] = p.code;
+          // 同時加入去掉前導0的版本
+          const stripped = p.barcode.replace(/^0+/, '');
+          if (stripped !== p.barcode) BARCODE_MAP[stripped] = p.code;
+        }
       });
       const count = Object.keys(PRODUCTS).length;
       document.getElementById('data-status').textContent = `已載入 ${count} 項商品`;
@@ -548,7 +553,9 @@ function startScan(mode) {
 function onDetected(result) {
   if (!scanActive) return;
   const code = result.codeResult.code;
-  const productCode = BARCODE_MAP[code];
+  // 同時比對原始條碼和去掉前導0的版本
+  const stripped = code.replace(/^0+/, '');
+  const productCode = BARCODE_MAP[code] || BARCODE_MAP[stripped];
   stopScan();
   if (productCode) {
     fillInfo(currentMode, PRODUCTS[productCode]);
