@@ -479,7 +479,10 @@ function doSearch(mode) {
   const box = document.getElementById('results-' + mode);
   if (q.length < 1) { box.style.display='none'; return; }
   const matches = Object.values(PRODUCTS).filter(p =>
-    p.code.toLowerCase().includes(q) || p.name.toLowerCase().includes(q)
+    p.code.toLowerCase().includes(q) || 
+    p.name.toLowerCase().includes(q) ||
+    (p.barcode && p.barcode.includes(q)) ||
+    (p.barcode && p.barcode.replace(/^0+/, '').includes(q))
   ).slice(0, 12);
   if (!matches.length) { box.style.display='none'; return; }
   box.innerHTML = matches.map(p =>
