@@ -227,13 +227,24 @@ function drwI(){const PG=20,s=ip*PG,sl=iF.slice(s,s+PG),t=iF.length,pg=Math.ceil
 function iP(d){ip+=d;drwI();}
 // ── 可售天數 ──
 let dp2=0,dF=[],dSC='days',dAsc=false,selD=null;
-function procSales(rows){DAYS=rows.filter(r=>pn(r[10])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[5]),webQty:pn(r[6]),bizQty:pn(r[8]),days:pn(r[10]),ending:pn(r[4])}));SD=rows.filter(r=>pn(r[5])>0||pn(r[6])>0||pn(r[8])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[5]),webQty:pn(r[6]),bizQty:pn(r[8]),days:pn(r[10])}));rD();rSD();}
+function procSales(rows){
+  // r[5]=門市日均, r[6]=官網日均, r[8]=業務日均（GAS已÷實際調撥天數）
+  // 可售天數頁籤用日均；月銷售調撥頁籤用×30顯示月總量
+  DAYS=rows.filter(r=>pn(r[10])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[5]),webQty:pn(r[6]),bizQty:pn(r[8]),days:pn(r[10]),ending:pn(r[4])}));
+  SD=rows.filter(r=>pn(r[5])>0||pn(r[6])>0||pn(r[8])>0).map(r=>({
+    code:String(r[0]).trim(),name:String(r[1]).trim(),
+    transf:pn(r[5])*30, webQty:pn(r[6])*30, bizQty:pn(r[8])*30,
+    transfD:pn(r[5]), webQtyD:pn(r[6]), bizQtyD:pn(r[8]),
+    days:pn(r[10])
+  }));
+  rD();rSD();
+}
 function rD(){dp2=0;const q=document.getElementById('dQ').value.toLowerCase();dF=DAYS.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q));applyD();}
 function dS(c){if(dSC===c)dAsc=!dAsc;else{dSC=c;dAsc=c!=='days';}dp2=0;applyD();}
 function applyD(){dF.sort((a,b)=>dSC==='days'?(dAsc?a.days-b.days:b.days-a.days):(dSC==='code'?(dAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code)):(dAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))));document.querySelectorAll('#days thead th').forEach((th,i)=>{th.classList.remove('sa','sd');if((i===0&&dSC==='code')||(i===1&&dSC==='name')||(i===2&&dSC==='days'))th.classList.add(dAsc?'sa':'sd');});drwD();}
 function drwD(){const PG=20,s=dp2*PG,sl=dF.slice(s,s+PG),t=dF.length,pg=Math.ceil(t/PG)||1;document.getElementById('dB').innerHTML=sl.length?sl.map(r=>`<tr class="cr${selD===r.code?' sr':''}" onclick="showDD('${r.code}')"><td style="font-size:11px;color:#5C4A00;text-decoration:underline">${r.code}</td><td style="color:#5C4A00;text-decoration:underline">${r.name}</td><td class="r" style="font-weight:700">${n2f(r.days)}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';document.getElementById('dI').textContent=`共 ${t} 筆（可售天數>0）`;document.getElementById('dP').textContent=`${dp2+1}/${pg}頁`;document.getElementById('dPv').disabled=dp2===0;document.getElementById('dNx').disabled=dp2>=pg-1;}
 function dPg(d){dp2+=d;drwD();}
-function showDD(code){selD=code;drwD();const r=DAYS.find(x=>x.code===code);if(!r)return;const p=document.getElementById('dDP');p.style.display='block';p.innerHTML=`<div class="dp"><div class="dt">🔍 ${r.name} <span style="font-size:11px;color:#8B7000;font-weight:400">${r.code}</span><span class="dc" onclick="closeDD()">✕</span></div><div class="ig"><div class="ic"><div class="il">門市調撥數</div><div class="iv">${n2s(Math.round(r.transf))}</div></div><div class="ic"><div class="il">官網銷售數</div><div class="iv">${n2s(Math.round(r.webQty))}</div></div><div class="ic"><div class="il">業務銷售數</div><div class="iv">${n2s(Math.round(r.bizQty))}</div></div><div class="ic"><div class="il">期末庫存</div><div class="iv">${n2s(Math.round(r.ending))}</div></div><div class="ic"><div class="il">可售天數</div><div class="iv">${n2f(r.days)}</div></div></div></div>`;p.scrollIntoView({behavior:'smooth',block:'nearest'});}
+function showDD(code){selD=code;drwD();const r=DAYS.find(x=>x.code===code);if(!r)return;const p=document.getElementById('dDP');p.style.display='block';p.innerHTML=`<div class="dp"><div class="dt">🔍 ${r.name} <span style="font-size:11px;color:#8B7000;font-weight:400">${r.code}</span><span style="font-size:11px;color:#AE0000;font-weight:400;margin-left:4px">（日調撥銷售數）</span><span class="dc" onclick="closeDD()">✕</span></div><div class="ig"><div class="ic"><div class="il">門市調撥數</div><div class="iv">${n2s(Math.round(r.transf))}</div></div><div class="ic"><div class="il">官網銷售數</div><div class="iv">${n2s(Math.round(r.webQty))}</div></div><div class="ic"><div class="il">業務銷售數</div><div class="iv">${n2s(Math.round(r.bizQty))}</div></div><div class="ic"><div class="il">期末庫存</div><div class="iv">${n2s(Math.round(r.ending))}</div></div><div class="ic"><div class="il">可售天數</div><div class="iv">${n2f(r.days)}</div></div></div></div>`;p.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeDD(){document.getElementById('dDP').style.display='none';selD=null;drwD();}
 // ── 銷售調撥 ──
 let sp=0,sF=[],selS=null;
