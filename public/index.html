@@ -365,10 +365,10 @@ let sp=0,sF=[],selS=null;
 function procTF(data){
   TF={};
   data.forEach(r=>{
-    const code=String(r[3]||'').trim();
+    const code=String(r[2]||'').trim();
     if(!code||code==='商品代號')return;
     if(!TF[code])TF[code]=[];
-    const store=String(r[2]||'').trim(), qty=pn(r[5]);
+    const store=String(r[1]||'').trim(), qty=pn(r[4]);
     if(store&&qty>0){const ex=TF[code].find(x=>x.s===store);if(ex)ex.q+=qty;else TF[code].push({s:store,q:qty});}
   });
   Object.keys(TF).forEach(k=>TF[k].sort((a,b)=>b.q-a.q));
