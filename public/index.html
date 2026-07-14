@@ -360,46 +360,25 @@ function buildEIQ(eDist, iMap, qMap, totalOrders, nameMap){
   // I圖：TOP20
   const top20=Object.entries(iMap).sort((a,b)=>b[1]-a[1]).slice(0,20);
   const iLabels=top20.map(([code])=>nameMap[code]||code);
-  const iCodes=top20.map(([code])=>code);
   const iData=top20.map(([,cnt])=>cnt);
   const iFreq=iData.map(v=>(v/totalOrders*100).toFixed(1));
   document.getElementById('eiqIStat').textContent='';
   if(eiqIC){eiqIC.destroy();eiqIC=null;}
-  const drawLabels={
-    id:'drawLabels',
-    afterDraw(chart){
-      const ctx2=chart.ctx,yAxis=chart.scales.y;
-      ctx2.save();
-      yAxis.ticks.forEach((_,i)=>{
-        const y=yAxis.getPixelForTick(i), x=yAxis.left-8;
-        ctx2.textAlign='right';
-        ctx2.fillStyle='#2C2600'; ctx2.font='bold 12px Arial';
-        ctx2.textBaseline='bottom';
-        ctx2.fillText(iLabels[i]||'', x, y+3);
-        ctx2.fillStyle='#8B7000'; ctx2.font='10px Arial';
-        ctx2.textBaseline='top';
-        ctx2.fillText(iCodes[i]||'', x, y+4);
-      });
-      ctx2.restore();
-    }
-  };
   eiqIC=new Chart(document.getElementById('eiqIC'),{
     type:'bar',
-    data:{labels:iCodes,datasets:[{
+    data:{labels:top20.map(([code])=>{const name=nameMap[code]||'';return name?`${name} (${code})`:code;}),datasets:[{
       label:'出現訂單數',data:iData,
-      backgroundColor:'#3B82F6',borderRadius:4
+      backgroundColor:'#3B82F6',borderRadius:4,
+      barThickness:18
     }]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      layout:{padding:{left:240}},
       plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:c=>`${n2s(c.raw)} 張（${iFreq[c.dataIndex]}%）`,
-        title:c=>[iLabels[c[0].dataIndex],iCodes[c[0].dataIndex]]
+        label:c=>`${n2s(c.raw)} 張（${iFreq[c.dataIndex]}%）`
       }}},
       scales:{
-        x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:11}}},
-        y:{grid:{display:false},ticks:{display:false,autoSkip:false}}
-      }},
-    plugins:[drawLabels]
+        x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00',font:{size:11}},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:11}}},
+        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:11},autoSkip:false},afterFit(axis){axis.width=220;}}
+      }}
   });
 }
 function procDaily(rows){const all=rows.filter(r=>r[0]).map(r=>{const dv=String(r[0]).trim();let ds=dv;const dtObj=new Date(dv);if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){ds=(dtObj.getMonth()+1)+'/'+(dtObj.getDate());}else{const pts=dv.split('/');if(pts.length>=3)ds=parseInt(pts[1])+'/'+parseInt(pts[2]);else if(pts.length===2)ds=parseInt(pts[0])+'/'+parseInt(pts[1]);}return{date:ds,pcs:pn(r[4])||null,biz:pn(r[6])||null,net:pn(r[8])||null,hrs:pn(r[10])>0?pn(r[10]):null,items:pn(r[3])||null,bizOrd:pn(r[5])||null,netOrd:pn(r[7])||null};});DAILY=all.slice(-21);buildDaily();}
