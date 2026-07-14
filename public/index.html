@@ -337,27 +337,6 @@ function procEIQ(rows){
   const totalOrders=Object.keys(orderMap).length;
   buildEIQ(eDist, iMap, qMap, totalOrders, nameMap);
 }
-  // E分析：訂單品項數分布
-  const eDist={};
-  for(const [,items] of Object.entries(orderMap)){
-    const n=items.size;
-    const key=n>=10?'10+':String(n);
-    eDist[key]=(eDist[key]||0)+1;
-  }
-  // I分析：商品出現在幾張訂單
-  const iMap={};
-  for(const [,items] of Object.entries(orderMap)){
-    for(const code of items) iMap[code]=(iMap[code]||0)+1;
-  }
-  // 彙總數量
-  const qMap={};
-  for(const r of rows){
-    const code=String(r[2]||'').trim(), qty=pn(r[3]);
-    if(code&&qty>0) qMap[code]=(qMap[code]||0)+qty;
-  }
-  const totalOrders=Object.keys(orderMap).length;
-  buildEIQ(eDist, iMap, qMap, totalOrders);
-}
 
 function buildEIQ(eDist, iMap, qMap, totalOrders, nameMap){
   // E圖
