@@ -94,6 +94,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="tab active" onclick="showTab('inv')">今日庫存</div>
   <div class="tab" onclick="showTab('days')">可售天數</div>
   <div class="tab" onclick="showTab('sd')">月銷售調撥資料</div>
+  <div class="tab" onclick="showTab('eiq')">官網EIQ</div>
   <div class="tab" onclick="showTab('daily')">近日作業</div>
   <div class="tab" onclick="showTab('mo')">月作業資料</div>
   <div class="tab" onclick="showTab('promo')">促銷活動</div>
@@ -167,6 +168,22 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   </table></div>
   <div class="pg"><span id="sdP"></span><button class="pb" id="sdPv" onclick="sP(-1)">‹</button><button class="pb" id="sdNx" onclick="sP(1)">›</button></div>
 </div>
+<!-- 官網EIQ -->
+<div id="eiq" class="sec">
+  <div class="chdr" style="margin-bottom:0">E分析：每張訂單品項數分布</div>
+  <div class="cbox" style="margin-bottom:14px">
+    <div class="leg">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>訂單數</span>
+      <span style="font-size:11px;color:#8B7000;margin-left:8px" id="eiqEStat"></span>
+    </div>
+    <div class="cw" style="height:240px"><canvas id="eiqEC"></canvas></div>
+  </div>
+  <div class="chdr" style="margin-bottom:0">I分析：商品訂單頻率 TOP 20</div>
+  <div class="cbox">
+    <div style="font-size:11px;color:#8B7000;margin-bottom:8px" id="eiqIStat"></div>
+    <div class="cw" style="height:340px"><canvas id="eiqIC"></canvas></div>
+  </div>
+</div>
 <!-- 近日作業 -->
 <div id="daily" class="sec">
   <div class="chdr" style="margin-bottom:0">銷售量體</div>
@@ -213,9 +230,9 @@ const n2s = n => (n==null||n==='')?'−':Number(n).toLocaleString();
 const n2f = (n,d=1) => (n==null||isNaN(n))?'−':Number(n).toFixed(d);
 const pn = s => typeof s==='string'?parseFloat(s.replace(/,/g,''))||0:parseFloat(s)||0;
 function prog(p){const b=document.getElementById('lb'),i=document.getElementById('li');if(p>=100){b.className='lbar';i.style.width='0%';return;}b.className='lbar on';i.style.width=p+'%';}
-function showTab(id){['inv','days','sd','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
+function showTab(id){['inv','days','sd','eiq','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
 async function ft(type){const c=new AbortController();const t=setTimeout(()=>c.abort(),30000);try{const url='/.netlify/functions/proxy?url='+encodeURIComponent(API+'?type='+type);const r=await fetch(url,{signal:c.signal});clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}catch(e){clearTimeout(t);throw e;}}
-async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
+async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'eiq',fn:d=>d.eiq&&procEIQ(d.eiq)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
 // ── 今日庫存 ──
 let ip=0,iF=[],iSC='code',iAsc=true;
 function procInv(rows){INV=rows.map(r=>[String(r[0]||''). trim(),String(r[1]||''). trim(),String(r[2]||''). trim(),pn(r[3]),pn(r[4]),pn(r[5]),pn(r[6]),pn(r[7])]).filter(r=>r[0]&&r[0]!=='商品代號');rInv();}
@@ -284,7 +301,81 @@ function showSD(code){
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function closeSDD(){document.getElementById('sdDP').style.display='none';selS=null;drwSD();}
-// ── 近日作業 ──
+// ── 官網EIQ ──
+let eiqEC=null, eiqIC=null;
+function procEIQ(rows){
+  // 欄位：0日期,1單號,2商品代號,3官網銷售數,4官網銷售金額
+  const orderMap={};
+  for(const r of rows){
+    const order=String(r[1]||'').trim(), code=String(r[2]||'').trim();
+    if(!order||!code||!/^[A-Z]/.test(code))continue;
+    if(!orderMap[order])orderMap[order]=new Set();
+    orderMap[order].add(code);
+  }
+  // E分析：訂單品項數分布
+  const eDist={};
+  for(const [,items] of Object.entries(orderMap)){
+    const n=items.size;
+    const key=n>=10?'10+':String(n);
+    eDist[key]=(eDist[key]||0)+1;
+  }
+  // I分析：商品出現在幾張訂單
+  const iMap={};
+  for(const [,items] of Object.entries(orderMap)){
+    for(const code of items) iMap[code]=(iMap[code]||0)+1;
+  }
+  // 彙總數量
+  const qMap={};
+  for(const r of rows){
+    const code=String(r[2]||'').trim(), qty=pn(r[3]);
+    if(code&&qty>0) qMap[code]=(qMap[code]||0)+qty;
+  }
+  const totalOrders=Object.keys(orderMap).length;
+  buildEIQ(eDist, iMap, qMap, totalOrders);
+}
+
+function buildEIQ(eDist, iMap, qMap, totalOrders){
+  // E圖
+  const eLabels=['1','2','3','4','5','6','7','8','9','10+'];
+  const eData=eLabels.map(k=>eDist[k]||0);
+  document.getElementById('eiqEStat').textContent=`總訂單 ${n2s(totalOrders)} 張，平均每單 ${(Object.values(eDist).reduce((s,v,i)=>s+(parseInt(eLabels[i])||10)*v,0)/totalOrders).toFixed(1)} 品項`;
+  if(eiqEC){eiqEC.destroy();eiqEC=null;}
+  eiqEC=new Chart(document.getElementById('eiqEC'),{
+    type:'bar',
+    data:{labels:eLabels.map(l=>l+'品項'),datasets:[{
+      label:'訂單數',data:eData,
+      backgroundColor:eLabels.map((_,i)=>i<3?'#22C55E':i<6?'#3B82F6':'#E8506A'),
+      borderRadius:4
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${n2s(c.raw)} 張（${(c.raw/totalOrders*100).toFixed(1)}%）`}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5C4A00'}},
+              y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}}}}
+  });
+
+  // I圖：TOP20
+  const top20=Object.entries(iMap).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  const iLabels=top20.map(([code])=>code);
+  const iData=top20.map(([,cnt])=>cnt);
+  const iFreq=iData.map(v=>(v/totalOrders*100).toFixed(1));
+  document.getElementById('eiqIStat').textContent=`共 ${Object.keys(iMap).length} 種商品，前20名訂單頻率`;
+  if(eiqIC){eiqIC.destroy();eiqIC=null;}
+  eiqIC=new Chart(document.getElementById('eiqIC'),{
+    type:'bar',
+    data:{labels:iLabels,datasets:[{
+      label:'出現訂單數',data:iData,
+      backgroundColor:'#3B82F6',borderRadius:4
+    }]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:c=>`${n2s(c.raw)} 張（${iFreq[c.dataIndex]}%）`
+      }}},
+      scales:{
+        x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}},
+        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:10}}}
+      }}
+  });
+}
 function procDaily(rows){const all=rows.filter(r=>r[0]).map(r=>{const dv=String(r[0]).trim();let ds=dv;const dtObj=new Date(dv);if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){ds=(dtObj.getMonth()+1)+'/'+(dtObj.getDate());}else{const pts=dv.split('/');if(pts.length>=3)ds=parseInt(pts[1])+'/'+parseInt(pts[2]);else if(pts.length===2)ds=parseInt(pts[0])+'/'+parseInt(pts[1]);}return{date:ds,pcs:pn(r[4])||null,biz:pn(r[6])||null,net:pn(r[8])||null,hrs:pn(r[10])>0?pn(r[10]):null,items:pn(r[3])||null,bizOrd:pn(r[5])||null,netOrd:pn(r[7])||null};});DAILY=all.slice(-21);buildDaily();}
 let dChart2=null;
 function buildDaily(){if(!DAILY.length)return;const labels=DAILY.map(d=>d.date);if(dChart){dChart.destroy();dChart=null;}dChart=new Chart(document.getElementById('dailyC'),{data:{labels,datasets:[{type:'bar',label:'門市揀貨PCS',data:DAILY.map(d=>d.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'業務銷售PCS/kg',data:DAILY.map(d=>d.biz),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'官網銷售PCS',data:DAILY.map(d=>d.net),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y',order:1},{type:'line',label:'總工時',data:DAILY.map(d=>d.hrs),borderColor:'#F5A623',backgroundColor:'transparent',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'yHrs',spanGaps:true,order:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#5C4A00',maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},yHrs:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:10},color:'#F5A623'}}}}});if(dChart2){dChart2.destroy();dChart2=null;}dChart2=new Chart(document.getElementById('dailyC2'),{data:{labels,datasets:[{type:'bar',label:'業務銷售單數',data:DAILY.map(d=>d.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},{type:'bar',label:'官網銷售單數',data:DAILY.map(d=>d.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:'#5C4A00',maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}});}
