@@ -181,7 +181,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="chdr" style="margin-bottom:0">I分析：商品訂單頻率 TOP 20</div>
   <div class="cbox">
     <div style="font-size:11px;color:#8B7000;margin-bottom:8px" id="eiqIStat"></div>
-    <div class="cw" style="height:340px"><canvas id="eiqIC"></canvas></div>
+    <div class="cw" style="height:520px"><canvas id="eiqIC"></canvas></div>
   </div>
 </div>
 <!-- 近日作業 -->
@@ -312,6 +312,31 @@ function procEIQ(rows){
     if(!orderMap[order])orderMap[order]=new Set();
     orderMap[order].add(code);
   }
+  // 從今日庫存建商品名稱對應
+  const nameMap={};
+  for(const r of INV) if(r[0]) nameMap[r[0]]=r[1]||'';
+
+  // E分析：訂單品項數分布
+  const eDist={};
+  for(const [,items] of Object.entries(orderMap)){
+    const n=items.size;
+    const key=n>=10?'10+':String(n);
+    eDist[key]=(eDist[key]||0)+1;
+  }
+  // I分析：商品出現在幾張訂單
+  const iMap={};
+  for(const [,items] of Object.entries(orderMap)){
+    for(const code of items) iMap[code]=(iMap[code]||0)+1;
+  }
+  // Q彙總
+  const qMap={};
+  for(const r of rows){
+    const code=String(r[2]||'').trim(), qty=pn(r[3]);
+    if(code&&qty>0) qMap[code]=(qMap[code]||0)+qty;
+  }
+  const totalOrders=Object.keys(orderMap).length;
+  buildEIQ(eDist, iMap, qMap, totalOrders, nameMap);
+}
   // E分析：訂單品項數分布
   const eDist={};
   for(const [,items] of Object.entries(orderMap)){
@@ -334,7 +359,7 @@ function procEIQ(rows){
   buildEIQ(eDist, iMap, qMap, totalOrders);
 }
 
-function buildEIQ(eDist, iMap, qMap, totalOrders){
+function buildEIQ(eDist, iMap, qMap, totalOrders, nameMap){
   // E圖
   const eLabels=['1','2','3','4','5','6','7','8','9','10+'];
   const eData=eLabels.map(k=>eDist[k]||0);
@@ -355,7 +380,10 @@ function buildEIQ(eDist, iMap, qMap, totalOrders){
 
   // I圖：TOP20
   const top20=Object.entries(iMap).sort((a,b)=>b[1]-a[1]).slice(0,20);
-  const iLabels=top20.map(([code])=>code);
+  const iLabels=top20.map(([code])=>{
+    const name=nameMap[code]||'';
+    return name ? `${code} ${name}` : code;
+  });
   const iData=top20.map(([,cnt])=>cnt);
   const iFreq=iData.map(v=>(v/totalOrders*100).toFixed(1));
   document.getElementById('eiqIStat').textContent=`共 ${Object.keys(iMap).length} 種商品，前20名訂單頻率`;
@@ -372,7 +400,7 @@ function buildEIQ(eDist, iMap, qMap, totalOrders){
       }}},
       scales:{
         x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}},
-        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:10}}}
+        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:9},autoSkip:false}}
       }}
   });
 }
