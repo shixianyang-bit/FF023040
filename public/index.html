@@ -187,11 +187,14 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="cbox">
     <div class="ci" id="eiqCI"></div>
     <div class="tw"><table>
-      <colgroup><col style="width:110px"><col><col style="width:90px"></colgroup>
+      <colgroup><col style="width:110px"><col><col style="width:70px"><col style="width:70px"><col style="width:80px"></colgroup>
       <thead><tr>
-        <th>商品代號</th><th>商品名稱</th><th class="r">未出數量</th>
+        <th>商品代號</th><th>商品名稱</th>
+        <th class="r" onclick="eiqSort('z01')" style="cursor:pointer">Z01<span id="eiqSZ"> ⇅</span></th>
+        <th class="r" onclick="eiqSort('fu')" style="cursor:pointer">輔翼<span id="eiqSF"> ⇅</span></th>
+        <th class="r" onclick="eiqSort('qty')" style="cursor:pointer">未出數量<span id="eiqSQ"> ▼</span></th>
       </tr></thead>
-      <tbody id="eiqTB"><tr><td colspan="3" class="spinner">載入中...</td></tr></tbody>
+      <tbody id="eiqTB"><tr><td colspan="5" class="spinner">載入中...</td></tr></tbody>
     </table></div>
     <div class="pg"><span id="eiqP"></span><button class="pb" id="eiqPv" onclick="eiqPg(-1)">‹</button><button class="pb" id="eiqNx" onclick="eiqPg(1)">›</button></div>
   </div>
@@ -387,22 +390,44 @@ function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders){
       }}
   });
   // 明細表格（全部，依未出數量排序，分頁）
+  // 從今日庫存建 Z01/輔翼對應
+  const invMap={};
+  for(const r of INV) if(r[0]) invMap[r[0]]={z01:r[6]||0, fu:r[7]||0};
   window._eiqItems=Object.entries(qMap).sort((a,b)=>b[1]-a[1]);
   window._eiqNameMap=nameMap; window._eiqNameMap2=nameMap2;
+  window._eiqInvMap=invMap;
+  window._eiqPage=0; window._eiqSortKey='qty'; window._eiqSortAsc=false;
+  drwEIQ();
+}
+function eiqSort(key){
+  if(window._eiqSortKey===key) window._eiqSortAsc=!window._eiqSortAsc;
+  else{window._eiqSortKey=key; window._eiqSortAsc=false;}
   window._eiqPage=0;
+  // 更新箭頭
+  ['z01','fu','qty'].forEach(k=>{
+    const el=document.getElementById('eiqS'+{z01:'Z',fu:'F',qty:'Q'}[k]);
+    if(el) el.textContent=window._eiqSortKey===k?(window._eiqSortAsc?' ▲':' ▼'):' ⇅';
+  });
   drwEIQ();
 }
 function drwEIQ(){
-  const PG=20, items=window._eiqItems||[], p=window._eiqPage||0;
-  const s=p*PG, sl=items.slice(s,s+PG), t=items.length, pg=Math.ceil(t/PG)||1;
+  const PG=20, invMap=window._eiqInvMap||{};
   const nameMap=window._eiqNameMap||{}, nameMap2=window._eiqNameMap2||{};
+  const key=window._eiqSortKey||'qty', asc=window._eiqSortAsc||false;
+  const items=[...(window._eiqItems||[])].sort((a,b)=>{
+    const av=key==='qty'?a[1]:(invMap[a[0]]?.[key]||0);
+    const bv=key==='qty'?b[1]:(invMap[b[0]]?.[key]||0);
+    return asc?av-bv:bv-av;
+  });
+  const p=window._eiqPage||0, s=p*PG, sl=items.slice(s,s+PG), t=items.length, pg=Math.ceil(t/PG)||1;
   const tb=document.getElementById('eiqTB');
   if(tb) tb.innerHTML=sl.length
     ? sl.map(([code,qty])=>{
         const name=nameMap2[code]||nameMap[code]||'';
-        return `<tr><td style="font-size:11px;color:#8B7000">${code}</td><td>${name}</td><td class="r" style="font-weight:700">${n2s(qty)}</td></tr>`;
+        const z01=invMap[code]?.z01||0, fu=invMap[code]?.fu||0;
+        return `<tr><td style="font-size:11px;color:#8B7000">${code}</td><td>${name}</td><td class="r">${n2s(z01)}</td><td class="r">${n2s(fu)}</td><td class="r" style="font-weight:700">${n2s(qty)}</td></tr>`;
       }).join('')
-    : '<tr><td colspan="3" style="text-align:center;color:#8B7000;padding:16px">無資料</td></tr>';
+    : '<tr><td colspan="5" style="text-align:center;color:#8B7000;padding:16px">無資料</td></tr>';
   const ci=document.getElementById('eiqCI');
   if(ci) ci.textContent=`顯示 ${s+1}–${Math.min(s+PG,t)} / 共 ${t} 筆`;
   const pp=document.getElementById('eiqP');
