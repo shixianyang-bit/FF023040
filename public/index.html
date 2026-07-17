@@ -260,14 +260,14 @@ function iP(d){ip+=d;drwI();}
 // ── 可售天數 ──
 let dp2=0,dF=[],dSC='days',dAsc=false,selD=null;
 function procSales(rows){
-  // r[5]=門市日均, r[6]=官網日均, r[8]=業務日均（GAS已÷實際調撥天數）
-  // 可售天數頁籤用日均；月銷售調撥頁籤用×30顯示月總量
-  DAYS=rows.filter(r=>pn(r[10])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[5]),webQty:pn(r[6]),bizQty:pn(r[8]),days:pn(r[10]),ending:pn(r[4])}));
-  SD=rows.filter(r=>pn(r[5])>0||pn(r[6])>0||pn(r[8])>0).map(r=>({
+  // 欄位：A商品代號(0),B名稱(1),C單位(2),D期初(3),E期末(4),F官網訂單未出(5),
+  //       G門市調撥數(6),H官網銷售數(7),I官網銷售金額(8),J業務銷售數(9),K業務銷售金額(10),L可售天數(11)
+  DAYS=rows.filter(r=>pn(r[11])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[6]),webQty:pn(r[7]),bizQty:pn(r[9]),days:pn(r[11]),ending:pn(r[4])}));
+  SD=rows.filter(r=>pn(r[6])>0||pn(r[7])>0||pn(r[9])>0).map(r=>({
     code:String(r[0]).trim(),name:String(r[1]).trim(),
-    transf:pn(r[5])*30, webQty:pn(r[6])*30, bizQty:pn(r[8])*30,
-    transfD:pn(r[5]), webQtyD:pn(r[6]), bizQtyD:pn(r[8]),
-    days:pn(r[10])
+    transf:pn(r[6])*30, webQty:pn(r[7])*30, bizQty:pn(r[9])*30,
+    transfD:pn(r[6]), webQtyD:pn(r[7]), bizQtyD:pn(r[9]),
+    days:pn(r[11])
   }));
   rD();rSD();
 }
