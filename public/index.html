@@ -248,7 +248,7 @@ function procSales(rows){
     const code=String(r[0]).trim();
     return {
       code, name:String(r[1]).trim(), unit:String(r[2]||'').trim(),
-      transf:pn(r[6])*30, webQty:pn(r[7])*30, bizQty:pn(r[9])*30,
+      transf:pn(r[6]), webQty:pn(r[7]), bizQty:pn(r[9]),
       eiqQty:pn(r[5]), ending:pn(r[4]), days:pn(r[11])
     };
   });
