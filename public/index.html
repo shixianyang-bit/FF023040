@@ -92,8 +92,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 <div class="lbar" id="lb"><div class="lbar-i" id="li"></div></div>
 <div class="tabs">
   <div class="tab active" onclick="showTab('inv')">今日庫存</div>
-  <div class="tab" onclick="showTab('days')">可售天數</div>
-  <div class="tab" onclick="showTab('sd')">月銷售調撥資料</div>
+  <div class="tab" onclick="showTab('sd')">近30日銷售調撥資料</div>
   <div class="tab" onclick="showTab('eiq')">官網未出EIQ</div>
   <div class="tab" onclick="showTab('daily')">近日作業</div>
   <div class="tab" onclick="showTab('mo')">月作業資料</div>
@@ -131,40 +130,36 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   </table></div>
   <div class="pg"><span id="invP"></span><button class="pb" id="invPv" onclick="iP(-1)">‹</button><button class="pb" id="invNx" onclick="iP(1)">›</button></div>
 </div>
-<!-- 可售天數 -->
-<div id="days" class="sec">
-  <div id="dDP" style="display:none"></div>
-  <div class="tlb"><div class="sw"><span class="si">🔍</span><input class="sq" id="dQ" placeholder="搜尋商品..." oninput="rD()"></div></div>
-  <div class="ci" id="dI"></div>
-  <div class="tw"><table>
-    <colgroup><col style="width:108px"><col><col style="width:90px"></colgroup>
-    <thead><tr>
-      <th onclick="dS('code')">商品代號<span class="ar"></span></th>
-      <th onclick="dS('name')">商品名稱<span class="ar"></span></th>
-      <th class="r" onclick="dS('days')">可售天數<span class="ar"></span></th>
-    </tr></thead>
-    <tbody id="dB"><tr><td colspan="3" class="spinner">載入中...</td></tr></tbody>
-  </table></div>
-  <div class="pg"><span id="dP"></span><button class="pb" id="dPv" onclick="dPg(-1)">‹</button><button class="pb" id="dNx" onclick="dPg(1)">›</button></div>
-</div>
-<!-- 銷售調撥 -->
+<!-- 近30日銷售調撥資料 -->
 <div id="sd" class="sec">
   <div id="sdDP" style="display:none"></div>
   <div class="tlb">
     <div class="sw"><span class="si">🔍</span><input class="sq" id="sdQ" placeholder="搜尋商品，點選查詳情..." oninput="rSD()"></div>
+    <select class="fl" id="sdCat" onchange="rSD()"><option value="">全部</option></select>
     <select class="fl" id="sdSort" onchange="rSD()">
-      <option value="transf">門市調撥↓</option><option value="webQty">官網銷售↓</option>
-      <option value="bizQty">業務銷售↓</option><option value="name">商品名稱</option>
+      <option value="transf">門市調撥↓</option>
+      <option value="webQty">官網銷售↓</option>
+      <option value="bizQty">業務銷售↓</option>
+      <option value="eiqQty">官網未出↓</option>
+      <option value="z01">Z01↓</option>
+      <option value="fu">輔翼↓</option>
+      <option value="name">商品名稱</option>
     </select>
   </div>
   <div class="ci" id="sdI"></div>
   <div class="tw"><table>
-    <colgroup><col><col style="width:90px"><col style="width:90px"><col style="width:90px"></colgroup>
+    <colgroup><col><col style="width:42px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:64px"><col style="width:64px"></colgroup>
     <thead><tr>
-      <th>商品名稱（點選查詳情）</th>
-      <th class="r">門市調撥數</th><th class="r">官網銷售數</th><th class="r">業務銷售數</th>
+      <th onclick="sdS('name')">商品名稱（點選查詳情）<span class="ar"></span></th>
+      <th>單位</th>
+      <th class="r" onclick="sdS('transf')">門市調撥數<span class="ar"></span></th>
+      <th class="r" onclick="sdS('webQty')">官網銷售數<span class="ar"></span></th>
+      <th class="r" onclick="sdS('bizQty')">業務銷售數<span class="ar"></span></th>
+      <th class="r" onclick="sdS('eiqQty')">官網訂單未出<span class="ar"></span></th>
+      <th class="r" onclick="sdS('z01')">Z01<span class="ar"></span></th>
+      <th class="r" onclick="sdS('fu')">輔翼<span class="ar"></span></th>
     </tr></thead>
-    <tbody id="sdB"><tr><td colspan="4" class="spinner">載入中...</td></tr></tbody>
+    <tbody id="sdB"><tr><td colspan="8" class="spinner">載入中...</td></tr></tbody>
   </table></div>
   <div class="pg"><span id="sdP"></span><button class="pb" id="sdPv" onclick="sP(-1)">‹</button><button class="pb" id="sdNx" onclick="sP(1)">›</button></div>
 </div>
@@ -245,7 +240,7 @@ const n2s = n => (n==null||n==='')?'−':Number(n).toLocaleString();
 const n2f = (n,d=1) => (n==null||isNaN(n))?'−':Number(n).toFixed(d);
 const pn = s => typeof s==='string'?parseFloat(s.replace(/,/g,''))||0:parseFloat(s)||0;
 function prog(p){const b=document.getElementById('lb'),i=document.getElementById('li');if(p>=100){b.className='lbar';i.style.width='0%';return;}b.className='lbar on';i.style.width=p+'%';}
-function showTab(id){['inv','days','sd','eiq','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
+function showTab(id){['inv','sd','eiq','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
 async function ft(type){const c=new AbortController();const t=setTimeout(()=>c.abort(),30000);try{const url='/.netlify/functions/proxy?url='+encodeURIComponent(API+'?type='+type);const r=await fetch(url,{signal:c.signal});clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}catch(e){clearTimeout(t);throw e;}}
 async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'eiq',fn:d=>d.eiq&&procEIQ(d.eiq)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
 // ── 今日庫存 ──
@@ -258,41 +253,75 @@ function applyI(){const ci=iCM[iSC];iF.sort((a,b)=>typeof a[ci]==='string'?(iAsc
 function drwI(){const PG=20,s=ip*PG,sl=iF.slice(s,s+PG),t=iF.length,pg=Math.ceil(t/PG)||1;document.getElementById('invB').innerHTML=sl.length?sl.map(r=>`<tr><td style="font-size:11px;color:#8B7000">${r[0]}</td><td>${r[1]}</td><td style="color:#8B7000">${r[2]}</td><td class="r">${r[3]||'−'}</td><td class="r">${r[4]||'−'}</td><td class="r">${r[5]||'−'}</td><td class="r" style="font-weight:700">${n2s(r[6])}</td><td class="r">${n2s(r[7])}</td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';document.getElementById('invI').textContent=`顯示 ${s+1}–${Math.min(s+PG,t)} / 共 ${t} 筆`;document.getElementById('invP').textContent=`${ip+1}/${pg}頁`;document.getElementById('invPv').disabled=ip===0;document.getElementById('invNx').disabled=ip>=pg-1;}
 function iP(d){ip+=d;drwI();}
 // ── 可售天數 ──
-let dp2=0,dF=[],dSC='days',dAsc=false,selD=null;
+// ── 近30日銷售調撥資料 ──
+let sp=0,sF=[],sdSC='transf',sdAsc=false,selS=null;
 function procSales(rows){
-  // 欄位：A商品代號(0),B名稱(1),C單位(2),D期初(3),E期末(4),F官網訂單未出(5),
-  //       G門市調撥數(6),H官網銷售數(7),I官網銷售金額(8),J業務銷售數(9),K業務銷售金額(10),L可售天數(11)
-  DAYS=rows.filter(r=>pn(r[11])>0).map(r=>({code:String(r[0]).trim(),name:String(r[1]).trim(),transf:pn(r[6]),webQty:pn(r[7]),bizQty:pn(r[9]),days:pn(r[11]),ending:pn(r[4])}));
-  SD=rows.filter(r=>pn(r[6])>0||pn(r[7])>0||pn(r[9])>0).map(r=>({
-    code:String(r[0]).trim(),name:String(r[1]).trim(),
-    transf:pn(r[6])*30, webQty:pn(r[7])*30, bizQty:pn(r[9])*30,
-    transfD:pn(r[6]), webQtyD:pn(r[7]), bizQtyD:pn(r[9]),
-    days:pn(r[11])
-  }));
-  rD();rSD();
+  // 欄位：A(0)商品代號,B(1)名稱,C(2)單位,D(3)期初,E(4)期末,F(5)官網訂單未出,
+  //       G(6)門市調撥數,H(7)官網銷售數,I(8)官網銷售金額,J(9)業務銷售數,K(10)業務銷售金額,L(11)可售天數
+  SD=rows.filter(r=>String(r[0]).trim()).map(r=>{
+    const code=String(r[0]).trim();
+    const invR=INV.find(x=>x[0]===code)||[];
+    return {
+      code, name:String(r[1]).trim(), unit:String(r[2]||'').trim(),
+      transf:pn(r[6])*30, webQty:pn(r[7])*30, bizQty:pn(r[9])*30,
+      eiqQty:pn(r[5]), z01:invR[6]||0, fu:invR[7]||0, days:pn(r[11])
+    };
+  });
+  // 類別選單（固定）
+  const sel=document.getElementById('sdCat');
+  if(sel) sel.innerHTML='<option value="">全部</option><option value="A">A類 自有品</option><option value="B">B類 外購品</option><option value="C">C類 業務</option>';
+  rSD();
 }
-function rD(){dp2=0;const q=document.getElementById('dQ').value.toLowerCase();dF=DAYS.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q));applyD();}
-function dS(c){if(dSC===c)dAsc=!dAsc;else{dSC=c;dAsc=c!=='days';}dp2=0;applyD();}
-function applyD(){dF.sort((a,b)=>dSC==='days'?(dAsc?a.days-b.days:b.days-a.days):(dSC==='code'?(dAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code)):(dAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))));document.querySelectorAll('#days thead th').forEach((th,i)=>{th.classList.remove('sa','sd');if((i===0&&dSC==='code')||(i===1&&dSC==='name')||(i===2&&dSC==='days'))th.classList.add(dAsc?'sa':'sd');});drwD();}
-function drwD(){const PG=20,s=dp2*PG,sl=dF.slice(s,s+PG),t=dF.length,pg=Math.ceil(t/PG)||1;document.getElementById('dB').innerHTML=sl.length?sl.map(r=>`<tr class="cr${selD===r.code?' sr':''}" onclick="showDD('${r.code}')"><td style="font-size:11px;color:#5C4A00;text-decoration:underline">${r.code}</td><td style="color:#5C4A00;text-decoration:underline">${r.name}</td><td class="r" style="font-weight:700">${n2f(r.days)}</td></tr>`).join(''):'<tr><td colspan="3" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';document.getElementById('dI').textContent=`共 ${t} 筆（可售天數>0）`;document.getElementById('dP').textContent=`${dp2+1}/${pg}頁`;document.getElementById('dPv').disabled=dp2===0;document.getElementById('dNx').disabled=dp2>=pg-1;}
-function dPg(d){dp2+=d;drwD();}
-function showDD(code){selD=code;drwD();const r=DAYS.find(x=>x.code===code);if(!r)return;const p=document.getElementById('dDP');p.style.display='block';p.innerHTML=`<div class="dp"><div class="dt">🔍 ${r.name} <span style="font-size:11px;color:#8B7000;font-weight:400">${r.code}</span><span style="font-size:11px;color:#AE0000;font-weight:400;margin-left:4px">（日調撥銷售數）</span><span class="dc" onclick="closeDD()">✕</span></div><div class="ig"><div class="ic"><div class="il">門市調撥數</div><div class="iv">${n2s(Math.round(r.transf))}</div></div><div class="ic"><div class="il">官網銷售數</div><div class="iv">${n2s(Math.round(r.webQty))}</div></div><div class="ic"><div class="il">業務銷售數</div><div class="iv">${n2s(Math.round(r.bizQty))}</div></div><div class="ic"><div class="il">期末庫存</div><div class="iv">${n2s(Math.round(r.ending))}</div></div><div class="ic"><div class="il">可售天數</div><div class="iv">${n2f(r.days)}</div></div></div></div>`;p.scrollIntoView({behavior:'smooth',block:'nearest'});}
-function closeDD(){document.getElementById('dDP').style.display='none';selD=null;drwD();}
-// ── 銷售調撥 ──
-let sp=0,sF=[],selS=null;
 function procTF(data){
   TF={};
   data.forEach(r=>{
-    const code=String(r[2]||''). trim();
+    const code=String(r[2]||'').trim();
     if(!code||code==='商品代號')return;
     if(!TF[code])TF[code]=[];
-    const store=String(r[1]||''). trim(),qty=pn(r[4]);
+    const store=String(r[1]||'').trim(),qty=pn(r[4]);
     if(store&&qty>0){const ex=TF[code].find(x=>x.s===store);if(ex)ex.q+=qty;else TF[code].push({s:store,q:qty});}
   });
   Object.keys(TF).forEach(k=>TF[k].sort((a,b)=>b.q-a.q));
 }
-function rSD(){sp=0;const q=document.getElementById('sdQ').value.toLowerCase();const sort=document.getElementById('sdSort').value;sF=SD.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q)).slice().sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'zh'):b[sort]-a[sort]);drwSD();}
-function drwSD(){const PG=20,s=sp*PG,sl=sF.slice(s,s+PG),t=sF.length,pg=Math.ceil(t/PG)||1;document.getElementById('sdB').innerHTML=sl.length?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')"><td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td><td class="r">${n2s(Math.round(r.transf))}</td><td class="r">${n2s(Math.round(r.webQty))}</td><td class="r">${n2s(Math.round(r.bizQty))}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';document.getElementById('sdI').textContent=`共 ${t} 筆 · 點選查看詳情`;document.getElementById('sdP').textContent=`${sp+1}/${pg}頁`;document.getElementById('sdPv').disabled=sp===0;document.getElementById('sdNx').disabled=sp>=pg-1;}
+function sdS(c){
+  if(sdSC===c)sdAsc=!sdAsc; else{sdSC=c;sdAsc=c==='name';}
+  sp=0; drwSD();
+}
+function rSD(){
+  sp=0;
+  const q=document.getElementById('sdQ').value.toLowerCase();
+  const cat=document.getElementById('sdCat').value;
+  sF=SD.filter(r=>{
+    const mq=!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q);
+    const mc=!cat||r.code.startsWith(cat);
+    return mq&&mc;
+  }).slice().sort((a,b)=>sdSC==='name'?a.name.localeCompare(b.name,'zh'):(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
+  drwSD();
+}
+function drwSD(){
+  const PG=20,s=sp*PG,sl=sF.slice(s,s+PG),t=sF.length,pg=Math.ceil(t/PG)||1;
+  const cols=['name',null,'transf','webQty','bizQty','eiqQty','z01','fu'];
+  document.querySelectorAll('#sd thead th').forEach((th,i)=>{
+    th.classList.remove('sa','sd');
+    if(cols[i]&&cols[i]===sdSC)th.classList.add(sdAsc?'sa':'sd');
+  });
+  document.getElementById('sdB').innerHTML=sl.length
+    ?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')">
+      <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
+      <td style="color:#8B7000;font-size:11px;text-align:center">${r.unit}</td>
+      <td class="r">${r.transf?n2s(Math.round(r.transf)):'-'}</td>
+      <td class="r">${r.webQty?n2s(Math.round(r.webQty)):'-'}</td>
+      <td class="r">${r.bizQty?n2s(Math.round(r.bizQty)):'-'}</td>
+      <td class="r">${r.eiqQty?n2s(Math.round(r.eiqQty)):'-'}</td>
+      <td class="r">${r.z01?n2s(r.z01):'-'}</td>
+      <td class="r">${r.fu?n2s(r.fu):'-'}</td>
+    </tr>`).join('')
+    :'<tr><td colspan="8" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';
+  document.getElementById('sdI').textContent=`共 ${t} 筆 · 點選查看詳情`;
+  document.getElementById('sdP').textContent=`${sp+1}/${pg}頁`;
+  document.getElementById('sdPv').disabled=sp===0;
+  document.getElementById('sdNx').disabled=sp>=pg-1;
+}
 function sP(d){sp+=d;drwSD();}
 function showSD(code){
   selS=code;drwSD();
