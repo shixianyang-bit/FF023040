@@ -135,7 +135,6 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div id="sdDP" style="display:none"></div>
   <div class="tlb">
     <div class="sw"><span class="si">🔍</span><input class="sq" id="sdQ" placeholder="搜尋商品，點選查詳情..." oninput="rSD()"></div>
-    <select class="fl" id="sdCat" onchange="rSD()"><option value="">全部</option></select>
   </div>
   <!-- 欄位勾選 -->
   <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:12px;color:#5C4A00">
@@ -254,9 +253,6 @@ function procSales(rows){
       eiqQty:pn(r[5]), z01:invR[6]||0, fu:invR[7]||0, days:pn(r[11])
     };
   });
-  // 類別選單（固定）
-  const sel=document.getElementById('sdCat');
-  if(sel) sel.innerHTML='<option value="">全部</option><option value="C">C類 業務</option>';
   rSD();
 }
 function procTF(data){
@@ -273,19 +269,15 @@ function procTF(data){
 function sdS(c){
   if(sdSC===c) sdAsc=!sdAsc;
   else{sdSC=c; sdAsc=(c==='name');}
-  sp=0; drwSD();
+  sp=0; rSD();
 }
 function rSD(){
   sp=0;
   const q=document.getElementById('sdQ').value.toLowerCase();
-  const cat=document.getElementById('sdCat').value;
-  sF=SD.filter(r=>{
-    const mq=!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q);
-    const mc=!cat||r.code.startsWith(cat);
-    return mq&&mc;
-  }).slice().sort((a,b)=>sdSC==='name'
-    ?(sdAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))
-    :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
+  sF=SD.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q))
+    .slice().sort((a,b)=>sdSC==='name'
+      ?(sdAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))
+      :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
   drwSD();
 }
 function drwSD(){
