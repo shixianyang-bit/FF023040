@@ -137,21 +137,17 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     <div class="sw"><span class="si">🔍</span><input class="sq" id="sdQ" placeholder="搜尋商品，點選查詳情..." oninput="rSD()"></div>
     <select class="fl" id="sdCat" onchange="rSD()"><option value="">全部</option></select>
   </div>
+  <!-- 欄位勾選 -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:12px;color:#5C4A00">
+    <label style="cursor:pointer"><input type="checkbox" id="chkTransf" checked onchange="rSD()"> 門市調撥數</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkWeb" checked onchange="rSD()"> 官網銷售數</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkBiz" checked onchange="rSD()"> 業務銷售數</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkEiq" onchange="rSD()"> 官網訂單未出</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkZ01" onchange="rSD()"> Z01</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkFu" onchange="rSD()"> 輔翼</label>
+  </div>
   <div class="ci" id="sdI"></div>
-  <div class="tw"><table>
-    <colgroup><col><col style="width:42px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:88px"><col style="width:64px"><col style="width:64px"></colgroup>
-    <thead><tr>
-      <th onclick="sdS('name')">商品名稱（點選查詳情）<span class="ar"></span></th>
-      <th>單位</th>
-      <th class="r" onclick="sdS('transf')">門市調撥數<span class="ar"></span></th>
-      <th class="r" onclick="sdS('webQty')">官網銷售數<span class="ar"></span></th>
-      <th class="r" onclick="sdS('bizQty')">業務銷售數<span class="ar"></span></th>
-      <th class="r" onclick="sdS('eiqQty')">官網訂單未出<span class="ar"></span></th>
-      <th class="r" onclick="sdS('z01')">Z01<span class="ar"></span></th>
-      <th class="r" onclick="sdS('fu')">輔翼<span class="ar"></span></th>
-    </tr></thead>
-    <tbody id="sdB"><tr><td colspan="8" class="spinner">載入中...</td></tr></tbody>
-  </table></div>
+  <div class="tw" id="sdTW"></div>
   <div class="pg"><span id="sdP"></span><button class="pb" id="sdPv" onclick="sP(-1)">‹</button><button class="pb" id="sdNx" onclick="sP(1)">›</button></div>
 </div>
 <!-- 官網未出EIQ -->
@@ -275,7 +271,8 @@ function procTF(data){
   Object.keys(TF).forEach(k=>TF[k].sort((a,b)=>b.q-a.q));
 }
 function sdS(c){
-  if(sdSC===c)sdAsc=!sdAsc; else{sdSC=c;sdAsc=c==='name';}
+  if(sdSC===c) sdAsc=!sdAsc;
+  else{sdSC=c; sdAsc=(c==='name');}
   sp=0; drwSD();
 }
 function rSD(){
@@ -286,28 +283,43 @@ function rSD(){
     const mq=!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q);
     const mc=!cat||r.code.startsWith(cat);
     return mq&&mc;
-  }).slice().sort((a,b)=>sdSC==='name'?a.name.localeCompare(b.name,'zh'):(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
+  }).slice().sort((a,b)=>sdSC==='name'
+    ?(sdAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))
+    :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
   drwSD();
 }
 function drwSD(){
-  const PG=20,s=sp*PG,sl=sF.slice(s,s+PG),t=sF.length,pg=Math.ceil(t/PG)||1;
-  const cols=['name',null,'transf','webQty','bizQty','eiqQty','z01','fu'];
-  document.querySelectorAll('#sd thead th').forEach((th,i)=>{
-    th.classList.remove('sa','sd');
-    if(cols[i]&&cols[i]===sdSC)th.classList.add(sdAsc?'sa':'sd');
-  });
-  document.getElementById('sdB').innerHTML=sl.length
-    ?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')">
-      <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
-      <td style="color:#8B7000;font-size:11px;text-align:center">${r.unit}</td>
-      <td class="r">${r.transf?n2s(Math.round(r.transf)):'-'}</td>
-      <td class="r">${r.webQty?n2s(Math.round(r.webQty)):'-'}</td>
-      <td class="r">${r.bizQty?n2s(Math.round(r.bizQty)):'-'}</td>
-      <td class="r">${r.eiqQty?n2s(Math.round(r.eiqQty)):'-'}</td>
-      <td class="r">${r.z01?n2s(r.z01):'-'}</td>
-      <td class="r">${r.fu?n2s(r.fu):'-'}</td>
-    </tr>`).join('')
-    :'<tr><td colspan="8" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';
+  const PG=20, s=sp*PG, sl=sF.slice(s,s+PG), t=sF.length, pg=Math.ceil(t/PG)||1;
+  // 勾選的欄位
+  const cols=[
+    {id:'chkTransf', key:'transf', label:'門市調撥數', w:'88px'},
+    {id:'chkWeb',    key:'webQty', label:'官網銷售數', w:'88px'},
+    {id:'chkBiz',    key:'bizQty', label:'業務銷售數', w:'88px'},
+    {id:'chkEiq',    key:'eiqQty', label:'官網訂單未出', w:'88px'},
+    {id:'chkZ01',    key:'z01',    label:'Z01',        w:'64px'},
+    {id:'chkFu',     key:'fu',     label:'輔翼',       w:'64px'},
+  ].filter(c=>document.getElementById(c.id)?.checked);
+
+  const totalCols=2+cols.length; // 名稱+單位+勾選欄
+  const arw=k=>sdSC===k?(sdAsc?' ▲':' ▼'):' ⇅';
+
+  const html=`<table>
+    <colgroup><col><col style="width:42px">${cols.map(c=>`<col style="width:${c.w}">`).join('')}</colgroup>
+    <thead><tr>
+      <th onclick="sdS('name')" style="cursor:pointer">商品名稱（點選查詳情）${arw('name')}</th>
+      <th>單位</th>
+      ${cols.map(c=>`<th class="r" onclick="sdS('${c.key}')" style="cursor:pointer">${c.label}${arw(c.key)}</th>`).join('')}
+    </tr></thead>
+    <tbody>${sl.length
+      ?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')">
+        <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
+        <td style="color:#8B7000;font-size:11px;text-align:center">${r.unit}</td>
+        ${cols.map(c=>`<td class="r">${r[c.key]?n2s(Math.round(r[c.key])):'-'}</td>`).join('')}
+      </tr>`).join('')
+      :`<tr><td colspan="${totalCols}" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>`}
+    </tbody></table>`;
+
+  document.getElementById('sdTW').innerHTML=html;
   document.getElementById('sdI').textContent=`共 ${t} 筆 · 點選查看詳情`;
   document.getElementById('sdP').textContent=`${sp+1}/${pg}頁`;
   document.getElementById('sdPv').disabled=sp===0;
