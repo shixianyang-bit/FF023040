@@ -141,9 +141,10 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     <label style="cursor:pointer"><input type="checkbox" id="chkTransf" checked onchange="rSD()"> 門市調撥數</label>
     <label style="cursor:pointer"><input type="checkbox" id="chkWeb" checked onchange="rSD()"> 官網銷售數</label>
     <label style="cursor:pointer"><input type="checkbox" id="chkBiz" checked onchange="rSD()"> 業務銷售數</label>
-    <label style="cursor:pointer"><input type="checkbox" id="chkEiq" onchange="rSD()"> 官網訂單未出</label>
-    <label style="cursor:pointer"><input type="checkbox" id="chkZ01" onchange="rSD()"> Z01</label>
-    <label style="cursor:pointer"><input type="checkbox" id="chkFu" onchange="rSD()"> 輔翼</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkEiq" checked onchange="rSD()"> 官網訂單未出</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkZ01" checked onchange="rSD()"> Z01</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkFu" checked onchange="rSD()"> 輔翼</label>
+    <label style="cursor:pointer"><input type="checkbox" id="chkDays" checked onchange="rSD()"> 可售天數</label>
   </div>
   <div class="ci" id="sdI"></div>
   <div class="tw" id="sdTW"></div>
@@ -276,7 +277,7 @@ function rSD(){
   const q=document.getElementById('sdQ').value.toLowerCase();
   sF=SD.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q))
     .slice().sort((a,b)=>sdSC==='name'
-      ?(sdAsc?a.name.localeCompare(b.name,'zh'):b.name.localeCompare(a.name,'zh'))
+      ?(sdAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code))
       :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
   drwSD();
 }
@@ -290,6 +291,7 @@ function drwSD(){
     {id:'chkEiq',    key:'eiqQty', label:'官網訂單未出', w:'88px'},
     {id:'chkZ01',    key:'z01',    label:'Z01',        w:'64px'},
     {id:'chkFu',     key:'fu',     label:'輔翼',       w:'64px'},
+    {id:'chkDays',   key:'days',   label:'可售天數',   w:'80px'},
   ].filter(c=>document.getElementById(c.id)?.checked);
 
   const totalCols=2+cols.length; // 名稱+單位+勾選欄
@@ -306,7 +308,7 @@ function drwSD(){
       ?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')">
         <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
         <td style="color:#8B7000;font-size:11px;text-align:center">${r.unit}</td>
-        ${cols.map(c=>`<td class="r">${r[c.key]?n2s(Math.round(r[c.key])):'-'}</td>`).join('')}
+        ${cols.map(c=>`<td class="r">${r[c.key]?(c.key==='days'?n2f(r[c.key]):n2s(Math.round(r[c.key]))):'-'}</td>`).join('')}
       </tr>`).join('')
       :`<tr><td colspan="${totalCols}" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>`}
     </tbody></table>`;
