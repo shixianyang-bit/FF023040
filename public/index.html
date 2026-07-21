@@ -110,7 +110,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     </select>
     <select class="fl" id="invF" onchange="rInv()">
       <option value="all">全部</option><option value="in">有庫存</option>
-      <option value="low">低庫存(1-9)</option><option value="zero">零庫存</option>
+      <option value="low">低庫存(&lt;100)</option><option value="zero">無庫存</option>
     </select>
   </div>
   <div class="ci" id="invI"></div>
@@ -135,6 +135,18 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div id="sdDP" style="display:none"></div>
   <div class="tlb">
     <div class="sw"><span class="si">🔍</span><input class="sq" id="sdQ" placeholder="搜尋商品，點選查詳情..." oninput="rSD()"></div>
+    <select class="fl" id="sdStock" onchange="rSD()">
+      <option value="all">全部</option>
+      <option value="in">有庫存</option>
+      <option value="low">低庫存(&lt;100)</option>
+      <option value="zero">無庫存</option>
+    </select>
+    <select class="fl" id="sdDays" onchange="rSD()">
+      <option value="all">全部</option>
+      <option value="30">可售天數(&lt;30)</option>
+      <option value="14">可售天數(&lt;14)</option>
+      <option value="7">可售天數(&lt;7)</option>
+    </select>
   </div>
   <!-- 欄位勾選 -->
   <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:12px;color:#5C4A00">
@@ -232,7 +244,7 @@ async function loadAll(){prog(5);document.getElementById('ut').textContent='資�
 // ── 今日庫存 ──
 let ip=0,iF=[],iSC='code',iAsc=true;
 function procInv(rows){INV=rows.map(r=>[String(r[0]||''). trim(),String(r[1]||''). trim(),String(r[2]||''). trim(),pn(r[3]),pn(r[4]),pn(r[5]),pn(r[6]),pn(r[7])]).filter(r=>r[0]&&r[0]!=='商品代號');rInv();}
-function rInv(){ip=0;const q=document.getElementById('invQ').value.toLowerCase();const w=document.getElementById('invW').value;const f=document.getElementById('invF').value;iF=INV.filter(r=>{const mq=!q||r[0].toLowerCase().includes(q)||r[1].toLowerCase().includes(q);const mw=w==='all'||(w==='z01'&&r[6]>0)||(w==='a01'&&r[3]>0)||(w==='b01'&&r[4]>0)||(w==='b02'&&r[5]>0)||(w==='fu'&&r[7]>0);const mf=f==='all'||(f==='in'&&r[6]>0)||(f==='low'&&r[6]>=1&&r[6]<=9)||(f==='zero'&&r[6]===0);return mq&&mw&&mf;});applyI();}
+function rInv(){ip=0;const q=document.getElementById('invQ').value.toLowerCase();const w=document.getElementById('invW').value;const f=document.getElementById('invF').value;iF=INV.filter(r=>{const mq=!q||r[0].toLowerCase().includes(q)||r[1].toLowerCase().includes(q);const mw=w==='all'||(w==='z01'&&r[6]>0)||(w==='a01'&&r[3]>0)||(w==='b01'&&r[4]>0)||(w==='b02'&&r[5]>0)||(w==='fu'&&r[7]>0);const mf=f==='all'||(f==='in'&&r[6]>0)||(f==='low'&&r[6]>0&&r[6]<100)||(f==='zero'&&r[6]===0);return mq&&mw&&mf;});applyI();}
 const iCM={code:0,name:1,a01:3,b01:4,b02:5,z01:6,fu:7};
 function iS(c){if(iSC===c)iAsc=!iAsc;else{iSC=c;iAsc=c==='code'||c==='name';}ip=0;applyI();}
 function applyI(){const ci=iCM[iSC];iF.sort((a,b)=>typeof a[ci]==='string'?(iAsc?a[ci].localeCompare(b[ci],'zh'):b[ci].localeCompare(a[ci],'zh')):(iAsc?a[ci]-b[ci]:b[ci]-a[ci]));document.querySelectorAll('#inv thead th').forEach(th=>th.classList.remove('sa','sd'));['code','name',null,'a01','b01','b02','z01','fu'].forEach((c,i)=>{if(c===iSC)document.querySelectorAll('#inv thead th')[i].classList.add(iAsc?'sa':'sd');});drwI();}
@@ -273,10 +285,16 @@ function sdS(c){
 function rSD(){
   sp=0;
   const q=document.getElementById('sdQ').value.toLowerCase();
-  sF=SD.filter(r=>!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q))
-    .slice().sort((a,b)=>sdSC==='name'
-      ?(sdAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code))
-      :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
+  const st=document.getElementById('sdStock').value;
+  const dy=document.getElementById('sdDays').value;
+  sF=SD.filter(r=>{
+    const mq=!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q);
+    const ms=st==='all'||(st==='in'&&r.ending>0)||(st==='low'&&r.ending>0&&r.ending<100)||(st==='zero'&&r.ending===0);
+    const md=dy==='all'||(r.days>0&&r.days<parseInt(dy));
+    return mq&&ms&&md;
+  }).slice().sort((a,b)=>sdSC==='name'
+    ?(sdAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code))
+    :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
   drwSD();
 }
 function drwSD(){
