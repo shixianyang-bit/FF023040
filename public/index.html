@@ -136,15 +136,6 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="tlb">
     <div class="sw"><span class="si">🔍</span><input class="sq" id="sdQ" placeholder="搜尋商品，點選查詳情..." oninput="rSD()"></div>
     <select class="fl" id="sdCat" onchange="rSD()"><option value="">全部</option></select>
-    <select class="fl" id="sdSort" onchange="rSD()">
-      <option value="transf">門市調撥↓</option>
-      <option value="webQty">官網銷售↓</option>
-      <option value="bizQty">業務銷售↓</option>
-      <option value="eiqQty">官網未出↓</option>
-      <option value="z01">Z01↓</option>
-      <option value="fu">輔翼↓</option>
-      <option value="name">商品名稱</option>
-    </select>
   </div>
   <div class="ci" id="sdI"></div>
   <div class="tw"><table>
@@ -269,7 +260,7 @@ function procSales(rows){
   });
   // 類別選單（固定）
   const sel=document.getElementById('sdCat');
-  if(sel) sel.innerHTML='<option value="">全部</option><option value="A">A類 自有品</option><option value="B">B類 外購品</option><option value="C">C類 業務</option>';
+  if(sel) sel.innerHTML='<option value="">全部</option><option value="C">C類 業務</option>';
   rSD();
 }
 function procTF(data){
@@ -340,7 +331,6 @@ function showSD(code){
       <div class="ic"><div class="il">門市調撥數</div><div class="iv">${n2s(Math.round(r.transf))}</div></div>
       <div class="ic"><div class="il">官網銷售數</div><div class="iv">${n2s(Math.round(r.webQty))}</div></div>
       <div class="ic"><div class="il">業務銷售數</div><div class="iv">${n2s(Math.round(r.bizQty))}</div></div>
-      <div class="ic"><div class="il">可售天數</div><div class="iv">${n2f(r.days)}</div></div>
     </div>${tfH}</div>`;
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
