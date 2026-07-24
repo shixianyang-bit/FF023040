@@ -171,6 +171,14 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     </div>
     <div class="cw" style="height:240px"><canvas id="eiqEC"></canvas></div>
   </div>
+  <div class="chdr" style="margin-bottom:0">訂單未出日期分佈</div>
+  <div class="cbox" style="margin-bottom:14px">
+    <div class="leg">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#F5A623;vertical-align:middle;margin-right:4px;border-radius:2px"></span>未出張數</span>
+      <span style="font-size:11px;color:#8B7000;margin-left:8px" id="eiqDStat"></span>
+    </div>
+    <div class="cw" style="height:240px"><canvas id="eiqDC"></canvas></div>
+  </div>
   <div class="chdr" style="margin-bottom:0">I分析：商品訂單頻率 TOP 20</div>
   <div class="cbox" style="margin-bottom:14px">
     <div style="font-size:11px;color:#8B7000;margin-bottom:8px" id="eiqIStat"></div>
@@ -357,16 +365,28 @@ function showSD(code){
 }
 function closeSDD(){document.getElementById('sdDP').style.display='none';selS=null;drwSD();}
 // ── 官網未出EIQ ──
-let eiqEC=null, eiqIC=null;
+let eiqEC=null, eiqIC=null, eiqDC=null;
+function fmtDateShort(dv){
+  dv=String(dv||'').trim();
+  const dtObj=new Date(dv);
+  if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){
+    return (dtObj.getMonth()+1)+'/'+dtObj.getDate();
+  }
+  const pts=dv.split('/');
+  if(pts.length>=3)return parseInt(pts[1])+'/'+parseInt(pts[2]);
+  if(pts.length===2)return parseInt(pts[0])+'/'+parseInt(pts[1]);
+  return dv;
+}
 function procEIQ(rows){
   // 欄位：0訂單編號,1訂單日期,2商品代號,3商品名稱,4數量,5小計
-  const orderMap={}, qMap={}, nameMap2={};
+  const orderMap={}, qMap={}, nameMap2={}, orderDate={};
   for(const r of rows){
-    const order=String(r[0]||'').trim(), code=String(r[2]||'').trim(), name=String(r[3]||'').trim();
+    const order=String(r[0]||'').trim(), date=String(r[1]||'').trim(), code=String(r[2]||'').trim(), name=String(r[3]||'').trim();
     const qty=pn(r[4]);
     if(!order||!code||!/^[A-Z]/.test(code))continue;
     if(!orderMap[order])orderMap[order]=new Set();
     orderMap[order].add(code);
+    if(date&&!orderDate[order])orderDate[order]=date;
     qMap[code]=(qMap[code]||0)+qty;
     if(!nameMap2[code]&&name) nameMap2[code]=name;
   }
@@ -383,11 +403,26 @@ function procEIQ(rows){
   for(const [,items] of Object.entries(orderMap))
     for(const code of items) iMap[code]=(iMap[code]||0)+1;
 
+  // 依日期統計未出張數
+  const dDist={};
+  for(const order of Object.keys(orderMap)){
+    const label=fmtDateShort(orderDate[order]);
+    if(!label)continue;
+    dDist[label]=(dDist[label]||0)+1;
+  }
+  // 依原始日期字串排序（早到晚）
+  const dSortKey={};
+  for(const order of Object.keys(orderMap)){
+    const label=fmtDateShort(orderDate[order]);
+    if(label&&!(label in dSortKey)) dSortKey[label]=orderDate[order];
+  }
+  const dLabels=Object.keys(dDist).sort((a,b)=>String(dSortKey[a]).localeCompare(String(dSortKey[b])));
+
   const totalOrders=Object.keys(orderMap).length;
-  buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders);
+  buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLabels);
 }
 
-function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders){
+function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLabels){
   // E圖
   const eLabels=['1','2','3','4','5','6','7','8','9','10+'];
   const eData=eLabels.map(k=>eDist[k]||0);
@@ -405,6 +440,28 @@ function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders){
       scales:{x:{grid:{display:false},ticks:{color:'#5C4A00'}},
               y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}}}}
   });
+
+  // 訂單未出日期分佈圖
+  if(dLabels&&dLabels.length){
+    const dData=dLabels.map(l=>dDist[l]||0);
+    const dTotal=dData.reduce((s,v)=>s+v,0);
+    document.getElementById('eiqDStat').textContent=`共 ${dLabels.length} 天，合計 ${n2s(dTotal)} 張`;
+    if(eiqDC){eiqDC.destroy();eiqDC=null;}
+    eiqDC=new Chart(document.getElementById('eiqDC'),{
+      type:'bar',
+      data:{labels:dLabels,datasets:[{
+        label:'未出張數',data:dData,
+        backgroundColor:'#F5A623',borderRadius:4
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label} 未出 ${n2s(c.raw)} 張`}}},
+        scales:{x:{grid:{display:false},ticks:{color:'#5C4A00',maxRotation:45}},
+                y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'未出張數',color:'#5C4A00',font:{size:10}}}}}
+    });
+  }else{
+    document.getElementById('eiqDStat').textContent='';
+    if(eiqDC){eiqDC.destroy();eiqDC=null;}
+  }
 
   // I圖：TOP20
   const top20=Object.entries(iMap).sort((a,b)=>b[1]-a[1]).slice(0,20);
