@@ -147,6 +147,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
       <option value="14">可售天數(&lt;14)</option>
       <option value="7">可售天數(&lt;7)</option>
     </select>
+    <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C4A00;white-space:nowrap;cursor:pointer"><input type="checkbox" id="sdHideZero" onchange="rSD()"> 無庫存不顯示</label>
   </div>
   <!-- 欄位勾選 -->
   <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:12px;color:#5C4A00">
@@ -298,11 +299,13 @@ function rSD(){
   const q=document.getElementById('sdQ').value.toLowerCase();
   const st=document.getElementById('sdStock').value;
   const dy=document.getElementById('sdDays').value;
+  const hideZero=document.getElementById('sdHideZero')?.checked;
   sF=SD.filter(r=>{
     const mq=!q||r.name.toLowerCase().includes(q)||r.code.toLowerCase().includes(q);
     const ms=st==='all'||(st==='in'&&r.ending>0)||(st==='low'&&r.ending>0&&r.ending<100)||(st==='zero'&&r.ending===0);
     const md=dy==='all'||(r.days>0&&r.days<parseInt(dy));
-    return mq&&ms&&md;
+    const mz=!hideZero||r.ending>0;
+    return mq&&ms&&md&&mz;
   }).slice().sort((a,b)=>sdSC==='name'
     ?(sdAsc?a.code.localeCompare(b.code):b.code.localeCompare(a.code))
     :(sdAsc?a[sdSC]-b[sdSC]:b[sdSC]-a[sdSC]));
