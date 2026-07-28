@@ -494,7 +494,7 @@ function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLab
   // 從今日庫存建 Z01/輔翼對應
   const invMap={};
   for(const r of INV) if(r[0]) invMap[r[0]]={z01:r[6]||0, fu:r[7]||0};
-  window._eiqItems=Object.entries(qMap).sort((a,b)=>b[1]-a[1]);
+  window._eiqItems=Object.entries(qMap).filter(([code])=>!code.startsWith('K')).sort((a,b)=>b[1]-a[1]);
   window._eiqNameMap=nameMap; window._eiqNameMap2=nameMap2;
   window._eiqInvMap=invMap;
   window._eiqPage=0; window._eiqSortKey='qty'; window._eiqSortAsc=false;
