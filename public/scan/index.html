@@ -260,10 +260,20 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
       <button class="btn btn-primary" onclick="submitIn()">確認驗收</button>
       <button class="btn btn-secondary" onclick="clearForm('in')">清除重新掃描</button>
     </div>
-  </div>
-</div>
-
-<!-- ══ 盤點作業 ══ -->
+    <div id="last-record-in" style="display:none;margin-top:8px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500;">上筆驗收資料</div>
+      <div class="record-card">
+        <div class="record-header">
+          <span class="record-type type-in">進貨驗收</span>
+          <span class="record-time" id="last-in-date"></span>
+        </div>
+        <div class="record-name" id="last-in-name"></div>
+        <div class="record-meta">
+          <span id="last-in-code"></span>
+          <span class="record-qty-badge" id="last-in-qty"></span>
+        </div>
+      </div>
+    </div>
 <div id="page-cnt" class="page">
   <div class="topbar red">
     <button class="back" onclick="goBack()">‹</button>
@@ -292,10 +302,20 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
       <button class="btn btn-red" onclick="submitCnt()">確認盤點</button>
       <button class="btn btn-secondary" onclick="clearForm('cnt')">清除重新掃描</button>
     </div>
-  </div>
-</div>
-
-<!-- ══ 庫存查詢 ══ -->
+    <div id="last-record-cnt" style="display:none;margin-top:8px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500;">上筆盤點資料</div>
+      <div class="record-card">
+        <div class="record-header">
+          <span class="record-type type-cnt">盤點</span>
+          <span class="record-time" id="last-cnt-date"></span>
+        </div>
+        <div class="record-name" id="last-cnt-name"></div>
+        <div class="record-meta">
+          <span id="last-cnt-code"></span>
+          <span class="record-qty-badge" id="last-cnt-qty" style="color:#ff9800"></span>
+        </div>
+      </div>
+    </div>
 <div id="page-inv" class="page">
   <div class="topbar blue">
     <button class="back" onclick="goBack()">‹</button>
@@ -598,7 +618,16 @@ async function confirmSave() {
   document.getElementById('modal-overlay').classList.remove('active');
   await saveRecord(pendingSave.type, pendingSave.code, pendingSave.name, pendingSave.qty);
   showToast('✓ 記錄已儲存');
-  clearForm(pendingSave.type === '進貨驗收' ? 'in' : 'cnt');
+  const mode = pendingSave.type === '進貨驗收' ? 'in' : 'cnt';
+  // 更新上一筆顯示
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+  document.getElementById(`last-${mode}-date`).textContent = dateStr;
+  document.getElementById(`last-${mode}-name`).textContent = pendingSave.name;
+  document.getElementById(`last-${mode}-code`).textContent = pendingSave.code;
+  document.getElementById(`last-${mode}-qty`).textContent = pendingSave.qty;
+  document.getElementById(`last-record-${mode}`).style.display = 'block';
+  clearForm(mode);
   pendingSave = null;
 }
 
