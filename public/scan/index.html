@@ -274,9 +274,6 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         </div>
       </div>
     </div>
-  </div>
-</div>
-
 <div id="page-cnt" class="page">
   <div class="topbar red">
     <button class="back" onclick="goBack()">‹</button>
@@ -319,9 +316,6 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:var(--
         </div>
       </div>
     </div>
-  </div>
-</div>
-
 <div id="page-inv" class="page">
   <div class="topbar blue">
     <button class="back" onclick="goBack()">‹</button>
@@ -568,10 +562,14 @@ function startScan(mode) {
     inputStream: {
       name: 'Live', type: 'LiveStream',
       target: document.getElementById('scanner-container'),
-      constraints: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} }
+      constraints: { facingMode:'environment', width:{ideal:1280}, height:{ideal:720} },
+      area: {
+        top: '25%', right: '10%', left: '10%', bottom: '25%'
+      }
     },
     decoder: { readers: ['ean_reader','ean_8_reader','code_128_reader','code_39_reader'] },
-    locate: true
+    locate: true,
+    halfSample: true
   }, err => {
     if (err) { showToast('相機無法開啟'); stopScan(); return; }
     Quagga.start();
@@ -584,7 +582,7 @@ function onDetected(result) {
   const code = result.codeResult.code;
   // 同時比對原始條碼和去掉前導0的版本
   const stripped = code.replace(/^0+/, '');
-  const productCode = BARCODE_MAP[code] || BARCODE_MAP[stripped];
+  const productCode = BARCODE_MAP[code] || BARCODE_MAP[stripped] || (PRODUCTS[code] ? code : null);
   stopScan();
   if (productCode) {
     fillInfo(currentMode, PRODUCTS[productCode]);
