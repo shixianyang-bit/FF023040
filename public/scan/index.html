@@ -447,8 +447,22 @@ function logout() {
 // ── 載入商品 ─────────────────────────────────────────────────
 async function loadProducts() {
   try {
-    // 先驗證帳號是否在白名單
-    const check = await proxyFetch({type:'checkUser', email: currentUser.email});
+    // 先驗證帳號是否在白名單（失敗自動重試一次）
+    document.getElementById('login-status').textContent = '驗證帳號中...';
+    let check = null;
+    for (let i = 0; i < 2; i++) {
+      try {
+        check = await proxyFetch({type:'checkUser', email: currentUser.email});
+        break;
+      } catch(e) {
+        if (i === 0) {
+          document.getElementById('login-status').textContent = '連線中，重試中...';
+          await new Promise(r => setTimeout(r, 2000));
+        } else {
+          throw e;
+        }
+      }
+    }
     if (!check.allowed) {
       document.getElementById('login-status').textContent = '⚠ 您的帳號未獲授權，請聯絡管理員';
       // 強制回登入頁
