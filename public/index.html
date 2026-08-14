@@ -164,6 +164,10 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 </div>
 <!-- 官網未出EIQ -->
 <div id="eiq" class="sec">
+  <div id="eiqFilterBar" style="display:none;background:#FFF3CD;border:1.5px solid #F5C400;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:13px;color:#5C4A00;align-items:center;justify-content:space-between">
+    <span id="eiqFilterLabel"></span>
+    <button class="pb" onclick="eiqResetDate()">✕ 顯示全部日期</button>
+  </div>
   <div class="chdr" style="margin-bottom:0">E分析：每張訂單品項數分布</div>
   <div class="cbox" style="margin-bottom:14px">
     <div class="leg">
@@ -383,21 +387,34 @@ function fmtDateShort(dv){
 }
 function procEIQ(rows){
   // 欄位：0訂單編號,1訂單日期,2商品代號,3商品名稱,4數量,5小計
-  const orderMap={}, qMap={}, nameMap2={}, orderDate={};
+  const rawRows=[];
   for(const r of rows){
     const order=String(r[0]||'').trim(), date=String(r[1]||'').trim(), code=String(r[2]||'').trim(), name=String(r[3]||'').trim();
     const qty=pn(r[4]);
     if(!order||!code||!/^[A-Z]/.test(code))continue;
-    if(!orderMap[order])orderMap[order]=new Set();
-    orderMap[order].add(code);
-    if(date&&!orderDate[order])orderDate[order]=date;
-    qMap[code]=(qMap[code]||0)+qty;
-    if(!nameMap2[code]&&name) nameMap2[code]=name;
+    rawRows.push({order,date,code,name,qty});
   }
+  window._eiqRawRows=rawRows;
   // 從今日庫存補名稱
   const nameMap={};
   for(const r of INV) if(r[0]) nameMap[r[0]]=r[1]||'';
-
+  window._eiqNameMap=nameMap;
+  const invMap={};
+  for(const r of INV) if(r[0]) invMap[r[0]]={z01:r[6]||0, fu:r[7]||0};
+  window._eiqInvMap=invMap;
+  window._eiqSelectedDate=null;
+  renderEIQ();
+}
+// 依目前選擇日期（null=全部）計算E/I分析與明細所需統計
+function computeEIQStats(filterDate){
+  const rows = filterDate ? window._eiqRawRows.filter(r=>fmtDateShort(r.date)===filterDate) : (window._eiqRawRows||[]);
+  const orderMap={}, qMap={}, nameMap2={};
+  for(const r of rows){
+    if(!orderMap[r.order])orderMap[r.order]=new Set();
+    orderMap[r.order].add(r.code);
+    qMap[r.code]=(qMap[r.code]||0)+r.qty;
+    if(!nameMap2[r.code]&&r.name) nameMap2[r.code]=r.name;
+  }
   const eDist={};
   for(const [,items] of Object.entries(orderMap)){
     const n=items.size, key=n>=10?'10+':String(n);
@@ -406,31 +423,82 @@ function procEIQ(rows){
   const iMap={};
   for(const [,items] of Object.entries(orderMap))
     for(const code of items) iMap[code]=(iMap[code]||0)+1;
-
-  // 依日期統計未出張數
-  const dDist={};
-  for(const order of Object.keys(orderMap)){
+  return {eDist, iMap, qMap, nameMap2, totalOrders:Object.keys(orderMap).length};
+}
+// 日期分佈統計（永遠顯示全部日期，不受篩選影響，只用來畫柱狀圖）
+function computeDateDist(){
+  const orderDate={};
+  for(const r of (window._eiqRawRows||[])){
+    if(r.date && !orderDate[r.order]) orderDate[r.order]=r.date;
+  }
+  const dDist={}, dSortKey={};
+  for(const order of Object.keys(orderDate)){
     const label=fmtDateShort(orderDate[order]);
     if(!label)continue;
     dDist[label]=(dDist[label]||0)+1;
-  }
-  // 依原始日期字串排序（早到晚）
-  const dSortKey={};
-  for(const order of Object.keys(orderMap)){
-    const label=fmtDateShort(orderDate[order]);
-    if(label&&!(label in dSortKey)) dSortKey[label]=orderDate[order];
+    if(!(label in dSortKey)) dSortKey[label]=orderDate[order];
   }
   const dLabels=Object.keys(dDist).sort((a,b)=>String(dSortKey[a]).localeCompare(String(dSortKey[b])));
-
-  const totalOrders=Object.keys(orderMap).length;
-  buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLabels);
+  return {dDist, dLabels};
 }
-
-function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLabels){
+function renderEIQ(){
+  buildEIQCharts(computeEIQStats(window._eiqSelectedDate));
+  buildDateChart();
+  updateEIQFilterUI();
+}
+function updateEIQFilterUI(){
+  const bar=document.getElementById('eiqFilterBar');
+  const lbl=document.getElementById('eiqFilterLabel');
+  if(window._eiqSelectedDate){
+    bar.style.display='flex';
+    lbl.textContent=`目前篩選：${window._eiqSelectedDate}`;
+  }else{
+    bar.style.display='none';
+  }
+}
+function eiqSelectDate(label){
+  window._eiqSelectedDate = (window._eiqSelectedDate===label) ? null : label;
+  renderEIQ();
+}
+function eiqResetDate(){
+  window._eiqSelectedDate=null;
+  renderEIQ();
+}
+function buildDateChart(){
+  const {dDist, dLabels} = computeDateDist();
+  if(dLabels&&dLabels.length){
+    const dData=dLabels.map(l=>dDist[l]||0);
+    const dTotal=dData.reduce((s,v)=>s+v,0);
+    document.getElementById('eiqDStat').textContent=`共 ${dLabels.length} 天，合計 ${n2s(dTotal)} 張（點柱狀圖查看當日分析）`;
+    if(eiqDC){eiqDC.destroy();eiqDC=null;}
+    eiqDC=new Chart(document.getElementById('eiqDC'),{
+      type:'bar',
+      data:{labels:dLabels,datasets:[{
+        label:'未出張數',data:dData,
+        backgroundColor:dLabels.map(l=>l===window._eiqSelectedDate?'#C86A00':'#F5A623'),
+        borderRadius:4
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,
+        onClick:(evt,elements)=>{ if(elements&&elements.length) eiqSelectDate(dLabels[elements[0].index]); },
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label} 未出 ${n2s(c.raw)} 張`}}},
+        scales:{x:{grid:{display:false},ticks:{color:'#5C4A00',maxRotation:45}},
+                y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'未出張數',color:'#5C4A00',font:{size:10}}}}}
+    });
+  }else{
+    document.getElementById('eiqDStat').textContent='';
+    if(eiqDC){eiqDC.destroy();eiqDC=null;}
+  }
+}
+function buildEIQCharts(stats){
+  const {eDist, iMap, qMap, nameMap2, totalOrders} = stats;
+  const nameMap=window._eiqNameMap||{};
+  const filterSuffix = window._eiqSelectedDate ? `（篩選：${window._eiqSelectedDate}）` : '';
   // E圖
   const eLabels=['1','2','3','4','5','6','7','8','9','10+'];
   const eData=eLabels.map(k=>eDist[k]||0);
-  document.getElementById('eiqEStat').textContent=`訂單未出 ${n2s(totalOrders)} 張，平均每單 ${(Object.values(eDist).reduce((s,v,i)=>s+(parseInt(eLabels[i])||10)*v,0)/totalOrders).toFixed(1)} 品項`;
+  document.getElementById('eiqEStat').textContent = totalOrders
+    ? `訂單未出 ${n2s(totalOrders)} 張${filterSuffix}，平均每單 ${(Object.values(eDist).reduce((s,v,i)=>s+(parseInt(eLabels[i])||10)*v,0)/totalOrders).toFixed(1)} 品項`
+    : `無資料${filterSuffix}`;
   if(eiqEC){eiqEC.destroy();eiqEC=null;}
   eiqEC=new Chart(document.getElementById('eiqEC'),{
     type:'bar',
@@ -440,39 +508,16 @@ function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLab
       borderRadius:4
     }]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${n2s(c.raw)} 張（${(c.raw/totalOrders*100).toFixed(1)}%）`}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${n2s(c.raw)} 張（${totalOrders?(c.raw/totalOrders*100).toFixed(1):'0'}%）`}}},
       scales:{x:{grid:{display:false},ticks:{color:'#5C4A00'}},
               y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}}}}
   });
 
-  // 訂單未出日期分佈圖
-  if(dLabels&&dLabels.length){
-    const dData=dLabels.map(l=>dDist[l]||0);
-    const dTotal=dData.reduce((s,v)=>s+v,0);
-    document.getElementById('eiqDStat').textContent=`共 ${dLabels.length} 天，合計 ${n2s(dTotal)} 張`;
-    if(eiqDC){eiqDC.destroy();eiqDC=null;}
-    eiqDC=new Chart(document.getElementById('eiqDC'),{
-      type:'bar',
-      data:{labels:dLabels,datasets:[{
-        label:'未出張數',data:dData,
-        backgroundColor:'#F5A623',borderRadius:4
-      }]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label} 未出 ${n2s(c.raw)} 張`}}},
-        scales:{x:{grid:{display:false},ticks:{color:'#5C4A00',maxRotation:45}},
-                y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'未出張數',color:'#5C4A00',font:{size:10}}}}}
-    });
-  }else{
-    document.getElementById('eiqDStat').textContent='';
-    if(eiqDC){eiqDC.destroy();eiqDC=null;}
-  }
-
   // I圖：TOP20
   const top20=Object.entries(iMap).sort((a,b)=>b[1]-a[1]).slice(0,20);
-  const iLabels=top20.map(([code])=>nameMap[code]||code);
   const iData=top20.map(([,cnt])=>cnt);
-  const iFreq=iData.map(v=>(v/totalOrders*100).toFixed(1));
-  document.getElementById('eiqIStat').textContent='';
+  const iFreq=iData.map(v=>totalOrders?(v/totalOrders*100).toFixed(1):'0');
+  document.getElementById('eiqIStat').textContent = filterSuffix;
   if(eiqIC){eiqIC.destroy();eiqIC=null;}
   eiqIC=new Chart(document.getElementById('eiqIC'),{
     type:'bar',
@@ -490,13 +535,10 @@ function buildEIQ(eDist, iMap, qMap, nameMap, nameMap2, totalOrders, dDist, dLab
         y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:11},autoSkip:false},afterFit(axis){axis.width=220;}}
       }}
   });
-  // 明細表格（全部，依未出數量排序，分頁）
-  // 從今日庫存建 Z01/輔翼對應
-  const invMap={};
-  for(const r of INV) if(r[0]) invMap[r[0]]={z01:r[6]||0, fu:r[7]||0};
+
+  // 明細表格（依未出數量排序，分頁）
   window._eiqItems=Object.entries(qMap).filter(([code])=>!code.startsWith('K')).sort((a,b)=>b[1]-a[1]);
-  window._eiqNameMap=nameMap; window._eiqNameMap2=nameMap2;
-  window._eiqInvMap=invMap;
+  window._eiqNameMap2=nameMap2;
   window._eiqPage=0; window._eiqSortKey='qty'; window._eiqSortAsc=false;
   drwEIQ();
 }
