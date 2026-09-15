@@ -255,7 +255,23 @@ const n2f = (n,d=1) => (n==null||isNaN(n))?'−':Number(n).toFixed(d);
 const pn = s => typeof s==='string'?parseFloat(s.replace(/,/g,''))||0:parseFloat(s)||0;
 function prog(p){const b=document.getElementById('lb'),i=document.getElementById('li');if(p>=100){b.className='lbar';i.style.width='0%';return;}b.className='lbar on';i.style.width=p+'%';}
 function showTab(id){['inv','sd','eiq','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
-async function ft(type){const c=new AbortController();const t=setTimeout(()=>c.abort(),30000);try{const url='/.netlify/functions/proxy?url='+encodeURIComponent(API+'?type='+type);const r=await fetch(url,{signal:c.signal});clearTimeout(t);if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}catch(e){clearTimeout(t);throw e;}}
+async function ft(type){
+  for(let attempt=0; attempt<3; attempt++){
+    const c=new AbortController();
+    const t=setTimeout(()=>c.abort(),30000);
+    try{
+      const url='/.netlify/functions/proxy?url='+encodeURIComponent(API+'?type='+type);
+      const r=await fetch(url,{signal:c.signal});
+      clearTimeout(t);
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
+    }catch(e){
+      clearTimeout(t);
+      if(attempt===2) throw e;
+      await new Promise(res=>setTimeout(res, 800*(attempt+1)));
+    }
+  }
+}
 async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'eiq',fn:d=>d.eiq&&procEIQ(d.eiq)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
 // ── 今日庫存 ──
 let ip=0,iF=[],iSC='code',iAsc=true;
