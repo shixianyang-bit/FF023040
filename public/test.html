@@ -47,6 +47,12 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 .pb:hover{background:#F5C400}.pb:disabled{opacity:.4;cursor:default}
 .ci{font-size:12px;color:#8B7000;margin-bottom:6px}
 .dp{background:#FFFBE6;border:1.5px solid #F5C400;border-radius:10px;padding:14px;margin-bottom:14px}
+.ordc{background:#fff;border:1.5px solid #F5C400;border-radius:10px;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ordc-hdr{background:linear-gradient(135deg,#F5C400,#FFD84D);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.ordc-no{font-size:13px;font-weight:700;color:#2C2600}
+.ordc-no span{font-size:11px;font-weight:400;color:#5C4A00;margin-right:6px}
+.ordc-due{font-size:11px;background:#AE0000;color:#fff;padding:3px 9px;border-radius:999px;font-weight:700}
+.ordc-body{padding:12px 14px}
 .dt{font-size:14px;font-weight:700;color:#2C2600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dc{cursor:pointer;font-size:20px;color:#8B7000;margin-left:auto;padding:0 4px}
 .dc:hover{color:#2C2600}
@@ -95,6 +101,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="tab" onclick="showTab('sd')">近30日銷售調撥資料</div>
   <div class="tab" onclick="showTab('eiq')">官網未出EIQ</div>
   <div class="tab" onclick="showTab('daily')">近日作業</div>
+  <div class="tab" onclick="showTab('bizus')">業務訂單未銷</div>
   <div class="tab" onclick="showTab('mo')">月作業資料</div>
   <div class="tab" onclick="showTab('promo')">促銷活動</div>
 </div>
@@ -208,6 +215,15 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     <div class="pg"><span id="eiqP"></span><button class="pb" id="eiqPv" onclick="eiqPg(-1)">‹</button><button class="pb" id="eiqNx" onclick="eiqPg(1)">›</button></div>
   </div>
 </div>
+<!-- 業務訂單未銷 -->
+<div id="bizus" class="sec">
+  <div class="tlb">
+    <div class="sw"><span class="si">🔍</span><input class="sq" id="bizusQ" placeholder="搜尋客戶名稱或商品..." oninput="rBizUs()"></div>
+  </div>
+  <div class="ci" id="bizusI"></div>
+  <div id="bizusList"></div>
+  <div class="pg"><span id="bizusP"></span><button class="pb" id="bizusPv" onclick="bizUsPg(-1)">‹</button><button class="pb" id="bizusNx" onclick="bizUsPg(1)">›</button></div>
+</div>
 <!-- 近日作業 -->
 <div id="daily" class="sec">
   <div class="chdr" style="margin-bottom:0">銷售量體</div>
@@ -254,7 +270,7 @@ const n2s = n => (n==null||n==='')?'−':Number(n).toLocaleString();
 const n2f = (n,d=1) => (n==null||isNaN(n))?'−':Number(n).toFixed(d);
 const pn = s => typeof s==='string'?parseFloat(s.replace(/,/g,''))||0:parseFloat(s)||0;
 function prog(p){const b=document.getElementById('lb'),i=document.getElementById('li');if(p>=100){b.className='lbar';i.style.width='0%';return;}b.className='lbar on';i.style.width=p+'%';}
-function showTab(id){['inv','sd','eiq','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
+function showTab(id){['inv','sd','eiq','bizus','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
 async function ft(type){
   for(let attempt=0; attempt<3; attempt++){
     const c=new AbortController();
@@ -272,7 +288,7 @@ async function ft(type){
     }
   }
 }
-async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'eiq',fn:d=>d.eiq&&procEIQ(d.eiq)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
+async function loadAll(){prog(5);document.getElementById('ut').textContent='資料更新中...';const tasks=[{t:'inventory',fn:d=>d.inventory&&procInv(d.inventory)},{t:'sales',fn:d=>d.sales&&procSales(d.sales)},{t:'transfer',fn:d=>d.transfer&&procTF(d.transfer)},{t:'eiq',fn:d=>d.eiq&&procEIQ(d.eiq)},{t:'bizUnshipped',fn:d=>d.bizUnshipped&&procBizUs(d.bizUnshipped)},{t:'daily',fn:d=>d.daily&&procDaily(d.daily)},{t:'monthly',fn:d=>d.monthly&&procMo(d.monthly)},{t:'promo',fn:d=>d.promo&&procPromo(d.promo)}];let done=0,errs=[];for(const k of tasks){try{const d=await ft(k.t);k.fn(d);}catch(e){errs.push(k.t);}prog(Math.round(++done/tasks.length*95));}prog(100);const now=new Date();document.getElementById('ut').textContent=errs.length?'⚠ 部分失敗：'+errs.join(', '):`資料來源：data3345678 · 更新：${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;}
 // ── 今日庫存 ──
 let ip=0,iF=[],iSC='code',iAsc=true;
 function procInv(rows){INV=rows.map(r=>[String(r[0]||''). trim(),String(r[1]||''). trim(),String(r[2]||''). trim(),pn(r[3]),pn(r[4]),pn(r[5]),pn(r[6]),pn(r[7])]).filter(r=>r[0]&&r[0]!=='商品代號');rInv();}
@@ -388,6 +404,65 @@ function showSD(code){
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function closeSDD(){document.getElementById('sdDP').style.display='none';selS=null;drwSD();}
+// ── 業務訂單未銷 ──
+let BIZUS=[], bizusF=[], bizusPage=0;
+function procBizUs(rows){
+  // 欄位：0客戶代號,1客戶名稱,2訂單日期,3預計銷貨日,4訂單單號,5商品代號,6商品名稱,7訂單數量
+  const invMap={};
+  for(const r of INV) if(r[0]) invMap[r[0]]={b01:r[4]||0,b02:r[5]||0,z01:r[6]||0,fu:r[7]||0};
+  const orders={};
+  for(const r of rows){
+    const custCode=String(r[0]||'').trim();
+    const orderNo=String(r[4]||'').trim();
+    if(!custCode||!orderNo)continue;
+    const code=String(r[5]||'').trim(), name=String(r[6]||'').trim(), qty=pn(r[7]);
+    if(!orders[orderNo]) orders[orderNo]={
+      custCode, custName:String(r[1]||'').trim(),
+      orderDate:String(r[2]||'').trim(), dueDate:String(r[3]||'').trim(),
+      orderNo, items:[]
+    };
+    orders[orderNo].items.push({code,name,qty,...(invMap[code]||{b01:0,b02:0,z01:0,fu:0})});
+  }
+  BIZUS=Object.values(orders).sort((a,b)=>String(a.dueDate).localeCompare(String(b.dueDate)));
+  rBizUs();
+}
+function rBizUs(){
+  bizusPage=0;
+  const q=(document.getElementById('bizusQ')?.value||'').trim().toLowerCase();
+  bizusF=BIZUS.filter(o=>{
+    if(!q)return true;
+    const inCust=o.custName.toLowerCase().includes(q)||o.custCode.toLowerCase().includes(q)||o.orderNo.toLowerCase().includes(q);
+    const inItem=o.items.some(it=>it.name.toLowerCase().includes(q)||it.code.toLowerCase().includes(q));
+    return inCust||inItem;
+  });
+  drwBizUs();
+}
+function drwBizUs(){
+  const PG=10, s=bizusPage*PG, sl=bizusF.slice(s,s+PG), t=bizusF.length, pg=Math.ceil(t/PG)||1;
+  document.getElementById('bizusList').innerHTML = sl.length ? sl.map(o=>`
+    <div class="ordc">
+      <div class="ordc-hdr">
+        <div class="ordc-no"><span>${o.custCode}</span>${o.custName}<span style="margin-left:10px;font-weight:400">單號：${o.orderNo}</span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:#5C4A00">訂單日期 ${o.orderDate}</span>
+          <span class="ordc-due">預計銷貨 ${o.dueDate}</span>
+        </div>
+      </div>
+      <div class="ordc-body">
+        <div class="tw"><table>
+          <colgroup><col style="width:100px"><col><col style="width:66px"><col style="width:46px"><col style="width:46px"><col style="width:46px"><col style="width:52px"></colgroup>
+          <thead><tr><th>商品代號</th><th>商品名稱</th><th class="r">訂單數量</th><th class="r">B01</th><th class="r">B02</th><th class="r">Z01</th><th class="r">輔翼</th></tr></thead>
+          <tbody>${o.items.map(it=>`<tr><td style="font-size:11px;color:#8B7000">${it.code}</td><td>${it.name}</td><td class="r" style="font-weight:700">${n2f(it.qty)}</td><td class="r">${n2s(it.b01)}</td><td class="r">${n2s(it.b02)}</td><td class="r">${n2s(it.z01)}</td><td class="r">${n2s(it.fu)}</td></tr>`).join('')}</tbody>
+        </table></div>
+      </div>
+    </div>
+  `).join('') : '<div style="text-align:center;padding:30px;color:#8B7000">無符合資料</div>';
+  document.getElementById('bizusI').textContent = `共 ${t} 張訂單`;
+  document.getElementById('bizusP').textContent = `${bizusPage+1}/${pg}頁`;
+  document.getElementById('bizusPv').disabled = bizusPage===0;
+  document.getElementById('bizusNx').disabled = bizusPage>=pg-1;
+}
+function bizUsPg(d){bizusPage+=d;drwBizUs();}
 // ── 官網未出EIQ ──
 let eiqEC=null, eiqIC=null, eiqDC=null;
 function fmtDateShort(dv){
