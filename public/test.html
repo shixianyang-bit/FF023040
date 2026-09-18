@@ -404,6 +404,16 @@ function showSD(code){
   p.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function closeSDD(){document.getElementById('sdDP').style.display='none';selS=null;drwSD();}
+function fmtDateYMD(dv){
+  dv=String(dv||'').trim();
+  if(dv.includes('T')){
+    const m=dv.split('T')[0].match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if(m) return `${m[1]}/${m[2]}/${m[3]}`;
+  }
+  const m2=dv.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if(m2) return `${m2[1]}/${m2[2].padStart(2,'0')}/${m2[3].padStart(2,'0')}`;
+  return dv;
+}
 // ── 業務訂單未銷 ──
 let BIZUS=[], bizusF=[], bizusPage=0;
 function procBizUs(rows){
@@ -444,15 +454,19 @@ function drwBizUs(){
       <div class="ordc-hdr">
         <div class="ordc-no"><span>${o.custCode}</span>${o.custName}<span style="margin-left:10px;font-weight:400">單號：${o.orderNo}</span></div>
         <div style="display:flex;gap:8px;align-items:center">
-          <span style="font-size:11px;color:#5C4A00">訂單日期 ${o.orderDate}</span>
-          <span class="ordc-due">預計銷貨 ${o.dueDate}</span>
+          <span style="font-size:11px;color:#5C4A00">訂單日期 ${fmtDateYMD(o.orderDate)}</span>
+          <span class="ordc-due">預計銷貨 ${fmtDateYMD(o.dueDate)}</span>
         </div>
       </div>
       <div class="ordc-body">
         <div class="tw"><table>
           <colgroup><col style="width:100px"><col><col style="width:66px"><col style="width:46px"><col style="width:46px"><col style="width:46px"><col style="width:52px"></colgroup>
           <thead><tr><th>商品代號</th><th>商品名稱</th><th class="r">訂單數量</th><th class="r">B01</th><th class="r">B02</th><th class="r">Z01</th><th class="r">輔翼</th></tr></thead>
-          <tbody>${o.items.map(it=>`<tr><td style="font-size:11px;color:#8B7000">${it.code}</td><td>${it.name}</td><td class="r" style="font-weight:700">${n2f(it.qty)}</td><td class="r">${n2s(it.b01)}</td><td class="r">${n2s(it.b02)}</td><td class="r">${n2s(it.z01)}</td><td class="r">${n2s(it.fu)}</td></tr>`).join('')}</tbody>
+          <tbody>${o.items.map(it=>{
+            const stockSum=(it.b01||0)+(it.b02||0)+(it.fu||0);
+            const warn=it.qty>stockSum?' <span title="訂單數量超過可調撥庫存(B01+B02+輔翼)" style="color:#AE0000;font-weight:700">⚠</span>':'';
+            return `<tr><td style="font-size:11px;color:#8B7000">${it.code}</td><td>${it.name}</td><td class="r" style="font-weight:700">${n2f(it.qty)}${warn}</td><td class="r">${n2s(it.b01)}</td><td class="r">${n2s(it.b02)}</td><td class="r">${n2s(it.z01)}</td><td class="r">${n2s(it.fu)}</td></tr>`;
+          }).join('')}</tbody>
         </table></div>
       </div>
     </div>
