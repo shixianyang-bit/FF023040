@@ -51,7 +51,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 .ordc-hdr{background:linear-gradient(135deg,#F5C400,#FFD84D);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .ordc-no{font-size:13px;font-weight:700;color:#2C2600}
 .ordc-no span{font-size:11px;font-weight:400;color:#5C4A00;margin-right:6px}
-.ordc-due{font-size:11px;background:#AE0000;color:#fff;padding:3px 9px;border-radius:999px;font-weight:700}
+.ordc-due{font-size:11px;background:#F09B59;color:#fff;padding:3px 9px;border-radius:999px;font-weight:700}
 .ordc-body{padding:12px 14px}
 .dt{font-size:14px;font-weight:700;color:#2C2600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dc{cursor:pointer;font-size:20px;color:#8B7000;margin-left:auto;padding:0 4px}
@@ -99,8 +99,8 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 <div class="tabs">
   <div class="tab active" onclick="showTab('inv')">今日庫存</div>
   <div class="tab" onclick="showTab('sd')">近30日銷售調撥資料</div>
-  <div class="tab" onclick="showTab('eiq')">官網未出EIQ</div>
   <div class="tab" onclick="showTab('daily')">近日作業</div>
+  <div class="tab" onclick="showTab('eiq')">官網未出EIQ</div>
   <div class="tab" onclick="showTab('bizus')">業務訂單未銷</div>
   <div class="tab" onclick="showTab('mo')">月作業資料</div>
   <div class="tab" onclick="showTab('promo')">促銷活動</div>
@@ -169,6 +169,27 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="tw" id="sdTW"></div>
   <div class="pg"><span id="sdP"></span><button class="pb" id="sdPv" onclick="sP(-1)">‹</button><button class="pb" id="sdNx" onclick="sP(1)">›</button></div>
 </div>
+<!-- 近日作業 -->
+<div id="daily" class="sec">
+  <div class="chdr" style="margin-bottom:0">銷售量體</div>
+  <div class="cbox" style="margin-bottom:14px">
+    <div class="leg">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#E8506A;vertical-align:middle;margin-right:4px;border-radius:2px"></span>門市揀貨PCS</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售PCS/kg</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售PCS</span>
+      <span><span style="display:inline-block;width:20px;height:3px;background:#F5A623;vertical-align:middle;margin-right:4px;border-radius:2px"></span>總工時</span>
+    </div>
+    <div class="cw" style="height:260px"><canvas id="dailyC"></canvas></div>
+  </div>
+  <div class="chdr" style="margin-bottom:0">揀貨單數</div>
+  <div class="cbox">
+    <div class="leg">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售單數</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售單數</span>
+    </div>
+    <div class="cw" style="height:220px"><canvas id="dailyC2"></canvas></div>
+  </div>
+</div>
 <!-- 官網未出EIQ -->
 <div id="eiq" class="sec">
   <div id="eiqFilterBar" style="display:none;background:#FFF3CD;border:1.5px solid #F5C400;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:13px;color:#5C4A00;align-items:center;justify-content:space-between">
@@ -224,27 +245,6 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div id="bizusList"></div>
   <div class="pg"><span id="bizusP"></span><button class="pb" id="bizusPv" onclick="bizUsPg(-1)">‹</button><button class="pb" id="bizusNx" onclick="bizUsPg(1)">›</button></div>
 </div>
-<!-- 近日作業 -->
-<div id="daily" class="sec">
-  <div class="chdr" style="margin-bottom:0">銷售量體</div>
-  <div class="cbox" style="margin-bottom:14px">
-    <div class="leg">
-      <span><span style="display:inline-block;width:12px;height:12px;background:#E8506A;vertical-align:middle;margin-right:4px;border-radius:2px"></span>門市揀貨PCS</span>
-      <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售PCS/kg</span>
-      <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售PCS</span>
-      <span><span style="display:inline-block;width:20px;height:3px;background:#F5A623;vertical-align:middle;margin-right:4px;border-radius:2px"></span>總工時</span>
-    </div>
-    <div class="cw" style="height:260px"><canvas id="dailyC"></canvas></div>
-  </div>
-  <div class="chdr" style="margin-bottom:0">揀貨單數</div>
-  <div class="cbox">
-    <div class="leg">
-      <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售單數</span>
-      <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售單數</span>
-    </div>
-    <div class="cw" style="height:220px"><canvas id="dailyC2"></canvas></div>
-  </div>
-</div>
 <!-- 月作業 -->
 <div id="mo" class="sec" style="padding:0">
   <div class="chdr">月作業資料</div>
@@ -270,7 +270,7 @@ const n2s = n => (n==null||n==='')?'−':Number(n).toLocaleString();
 const n2f = (n,d=1) => (n==null||isNaN(n))?'−':Number(n).toFixed(d);
 const pn = s => typeof s==='string'?parseFloat(s.replace(/,/g,''))||0:parseFloat(s)||0;
 function prog(p){const b=document.getElementById('lb'),i=document.getElementById('li');if(p>=100){b.className='lbar';i.style.width='0%';return;}b.className='lbar on';i.style.width=p+'%';}
-function showTab(id){['inv','sd','eiq','bizus','daily','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
+function showTab(id){['inv','sd','daily','eiq','bizus','mo','promo'].forEach((x,j)=>{document.querySelectorAll('.tab')[j].classList.toggle('active',x===id);document.getElementById(x).classList.toggle('active',x===id);});}
 async function ft(type){
   for(let attempt=0; attempt<3; attempt++){
     const c=new AbortController();
