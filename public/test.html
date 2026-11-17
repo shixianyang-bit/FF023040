@@ -32,7 +32,7 @@ input.sq:focus{border-color:#C89B00;background:#fff}
 select.fl{padding:8px 10px;border:1.5px solid #F5C400;border-radius:8px;font-size:12px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-family:inherit}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-th{background:#F5C400;color:#2C2600;font-weight:700;padding:8px;text-align:left;font-size:12px;white-space:nowrap;cursor:pointer;user-select:none}
+th{background:#F5C400;color:#2C2600;font-weight:700;padding:8px;text-align:left;font-size:12px;white-space:nowrap;cursor:pointer;user-select:none;overflow:hidden;text-overflow:ellipsis}
 th.r{text-align:right}
 th:hover{background:#EBB800}
 th .ar::after{content:'⇅';margin-left:3px;font-size:10px;opacity:.4}
@@ -402,7 +402,7 @@ function drwSD(){
   const html=`<table>
     <colgroup><col><col style="width:42px">${cols.map(c=>`<col style="width:${c.w}">`).join('')}</colgroup>
     <thead><tr>
-      <th onclick="sdS('name')" style="cursor:pointer">商品名稱（點選查詳情）${arw('name')}</th>
+      <th onclick="sdS('name')" style="cursor:pointer">商品名稱${arw('name')}</th>
       <th>單位</th>
       ${cols.map(c=>`<th class="r" onclick="sdS('${c.key}')" style="cursor:pointer">${c.label}${arw(c.key)}</th>`).join('')}
     </tr></thead>
