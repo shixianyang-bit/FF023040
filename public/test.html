@@ -715,7 +715,10 @@ function eiqPg(d){window._eiqPage=(window._eiqPage||0)+d;drwEIQ();}
 function procDaily(rows){
   const toKey=(dv)=>{const dtObj=new Date(dv);let y,m,d;if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){y=dtObj.getFullYear();m=dtObj.getMonth()+1;d=dtObj.getDate();}else{const pts=dv.split('/');if(pts.length>=3){y=parseInt(pts[0]);m=parseInt(pts[1]);d=parseInt(pts[2]);}else{const now=new Date();y=now.getFullYear();m=parseInt(pts[0]);d=parseInt(pts[1]||pts[0]);}}return{y,m,d};};
   const parsed=rows.filter(r=>r[0]).map(r=>{const dv=String(r[0]).trim();const{y,m,d}=toKey(dv);const key=y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');return{key,date:m+'/'+d,pcs:pn(r[4])||null,biz:pn(r[6])||null,net:pn(r[8])||null,hrs:pn(r[10])>0?pn(r[10]):null,items:pn(r[3])||null,bizOrd:pn(r[5])||null,netOrd:pn(r[7])||null};});
-  const last=parsed.slice(-21);
+  // 平均固定抓最近30筆資料（不受畫面顯示天數影響）
+  window._dailyAvgWindow=parsed.slice(-30);
+  // 畫面固定顯示20天
+  const last=parsed.slice(-20);
   if(!last.length){DAILY=[];buildDaily();return;}
   const byKey={};last.forEach(x=>byKey[x.key]=x);
   const keys=Object.keys(byKey).sort();
@@ -735,9 +738,10 @@ function buildDaily(){
   const tickColor=(ctx)=>DAILY[ctx.index]&&DAILY[ctx.index].holiday?'#C9B98A':'#5C4A00';
   const titleCb=(items)=>{const idx=items[0]?.dataIndex;const d=DAILY[idx];return d&&d.holiday?`${d.date}（公休/未更新）`:items[0]?.label;};
   if(dChart){dChart.destroy();dChart=null;}
-  const validTotal=DAILY.filter(x=>x.pcs!=null||x.biz!=null||x.net!=null).map(x=>(x.pcs||0)+(x.biz||0)+(x.net||0));
+  const avgSrc=window._dailyAvgWindow||DAILY;
+  const validTotal=avgSrc.filter(x=>x.pcs!=null||x.biz!=null||x.net!=null).map(x=>(x.pcs||0)+(x.biz||0)+(x.net||0));
   const avgTotal=validTotal.length?validTotal.reduce((a,b)=>a+b,0)/validTotal.length:0;
-  const validHrs=DAILY.filter(x=>x.hrs!=null).map(x=>x.hrs);
+  const validHrs=avgSrc.filter(x=>x.hrs!=null).map(x=>x.hrs);
   const avgHrs=validHrs.length?validHrs.reduce((a,b)=>a+b,0)/validHrs.length:0;
   dChart=new Chart(document.getElementById('dailyC'),{data:{labels,datasets:[
     {type:'bar',label:'門市揀貨PCS',data:DAILY.map(d=>d.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',stack:'s1',order:2},
