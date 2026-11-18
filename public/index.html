@@ -16,8 +16,9 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:#f7f4e
 .lbar{background:#FFE066;height:4px;display:none}
 .lbar.on{display:block}
 .lbar-i{height:100%;background:#C89B00;width:0%;transition:width .3s}
-.tabs{display:flex;background:#FFE066;flex-wrap:wrap}
-.tab{padding:9px 14px;font-size:13px;font-weight:500;cursor:pointer;color:#5C4A00;border-right:1px solid #F5C400;white-space:nowrap}
+.tabs{display:flex;background:#FFE066;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.tabs::-webkit-scrollbar{height:4px}
+.tab{padding:9px 14px;font-size:13px;font-weight:500;cursor:pointer;color:#5C4A00;border-right:1px solid #F5C400;white-space:nowrap;flex:0 0 auto}
 .tab:last-child{border-right:none}
 .tab.active{background:#F5C400;color:#2C2600}
 .tab:hover:not(.active){background:#FFD700}
@@ -31,7 +32,7 @@ input.sq:focus{border-color:#C89B00;background:#fff}
 select.fl{padding:8px 10px;border:1.5px solid #F5C400;border-radius:8px;font-size:12px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-family:inherit}
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-th{background:#F5C400;color:#2C2600;font-weight:700;padding:8px;text-align:left;font-size:12px;white-space:nowrap;cursor:pointer;user-select:none}
+th{background:#F5C400;color:#2C2600;font-weight:700;padding:8px;text-align:left;font-size:12px;white-space:nowrap;cursor:pointer;user-select:none;overflow:hidden;text-overflow:ellipsis}
 th.r{text-align:right}
 th:hover{background:#EBB800}
 th .ar::after{content:'⇅';margin-left:3px;font-size:10px;opacity:.4}
@@ -72,17 +73,41 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
 .tag{background:#AE0000;color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px}
 .cw{position:relative;width:100%;height:300px}
 .cw2{position:relative;width:100%;height:320px}
+.cwScroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#5C4A00;margin-bottom:10px}
 .spinner{text-align:center;padding:40px;color:#8B7000;font-size:14px}
 .err{background:#fff3cd;border:1px solid #F5C400;border-radius:8px;padding:14px;margin:10px 0;font-size:13px;color:#5C4A00;line-height:1.8}
 .chdr{background:#F5C400;padding:10px 16px;border-radius:8px 8px 0 0;font-size:15px;font-weight:700;color:#2C2600}
 .cbox{border:1.5px solid #F5C400;border-top:none;border-radius:0 0 8px 8px;background:#fff;padding:14px}
 @media(max-width:600px){
-  body{padding:8px}.hdr-t{font-size:17px}
-  .tab{padding:7px 9px;font-size:11px}
-  td,th{font-size:12px;padding:6px 5px}
+  body{padding:8px}
+  .hdr{padding:10px 12px}
+  .hdr-t{font-size:16px}
+  .hdr-s{font-size:10px}
+  .reload-btn{padding:6px 10px;font-size:11px}
+  .tab{padding:8px 11px;font-size:12px}
+  .sec{padding:10px}
+  .tlb{gap:6px}
+  .sw{min-width:0}
+  input.sq,select.fl{font-size:16px;padding:9px 10px 9px 30px}
+  select.fl{padding:9px 8px}
+  td,th{font-size:11.5px;padding:6px 5px}
   .ig{grid-template-columns:repeat(2,1fr)}
-  .cw,.cw2{height:220px}
+  .cw{height:200px}
+  .cw2{height:240px}
+  .leg{gap:8px 12px;font-size:11px}
+  .chdr{font-size:13px;padding:9px 12px}
+  .ordc-hdr{padding:8px 10px}
+  .ordc-no{font-size:12px}
+  .ordc-body{padding:8px 10px}
+  .dt{font-size:13px}
+  .iv{font-size:14px}
+  .pb{padding:5px 10px;font-size:11px}
+  .pg{flex-wrap:wrap}
+}
+@media(max-width:380px){
+  .hdr-t{font-size:14px}
+  .tab{padding:7px 8px;font-size:11px}
 }
 </style>
 </head>
@@ -182,16 +207,18 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
       <span style="color:#C9871A"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #C9871A;vertical-align:middle;margin-right:4px"></span>平均總工時</span>
       <span style="color:#C9B98A;font-size:11px">（淺色日期＝公休/未更新）</span>
     </div>
-    <div class="cw" style="height:260px"><canvas id="dailyC"></canvas></div>
+    <div class="cwScroll" id="dailyCScroll"><div class="cw" id="dailyCWrap" style="height:260px"><canvas id="dailyC"></canvas></div></div>
   </div>
   <div class="chdr" style="margin-bottom:0">揀貨單數</div>
   <div class="cbox">
     <div class="leg">
       <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售單數</span>
       <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售單數</span>
-      <span style="font-size:11px;color:#8B7000">（數字＝當日總單數）</span>
+      <span style="color:#1D4ED8"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #1D4ED8;vertical-align:middle;margin-right:4px"></span>平均業務單數</span>
+      <span style="color:#15803D"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #15803D;vertical-align:middle;margin-right:4px"></span>平均官網單數</span>
+      <span style="font-size:11px;color:#8B7000">（數字＝當日總單數，平均不含週六）</span>
     </div>
-    <div class="cw" style="height:220px"><canvas id="dailyC2"></canvas></div>
+    <div class="cwScroll" id="dailyC2Scroll"><div class="cw" id="dailyC2Wrap" style="height:220px"><canvas id="dailyC2"></canvas></div></div>
   </div>
 </div>
 <!-- 官網未出EIQ -->
@@ -259,14 +286,14 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
       <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售PCS/kg</span>
       <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>網路銷售PCS</span>
     </div>
-    <div class="cw2"><canvas id="moC"></canvas></div>
+    <div class="cwScroll" id="moCScroll"><div class="cw2" id="moCWrap"><canvas id="moC"></canvas></div></div>
   </div>
   <div class="cbox">
     <div class="leg">
       <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>業務銷售單數</span>
       <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>網路銷售單數</span>
     </div>
-    <div class="cw2"><canvas id="moC2"></canvas></div>
+    <div class="cwScroll" id="moC2Scroll"><div class="cw2" id="moC2Wrap"><canvas id="moC2"></canvas></div></div>
   </div>
 </div>
 <!-- 促銷活動 -->
@@ -377,7 +404,7 @@ function drwSD(){
   const html=`<table>
     <colgroup><col><col style="width:42px">${cols.map(c=>`<col style="width:${c.w}">`).join('')}</colgroup>
     <thead><tr>
-      <th onclick="sdS('name')" style="cursor:pointer">商品名稱（點選查詳情）${arw('name')}</th>
+      <th onclick="sdS('name')" style="cursor:pointer">商品名稱${arw('name')}</th>
       <th>單位</th>
       ${cols.map(c=>`<th class="r" onclick="sdS('${c.key}')" style="cursor:pointer">${c.label}${arw(c.key)}</th>`).join('')}
     </tr></thead>
@@ -715,7 +742,10 @@ function eiqPg(d){window._eiqPage=(window._eiqPage||0)+d;drwEIQ();}
 function procDaily(rows){
   const toKey=(dv)=>{const dtObj=new Date(dv);let y,m,d;if(!isNaN(dtObj.getTime())&&(dv.includes('T')||dv.includes('Z')||dv.length>10)){y=dtObj.getFullYear();m=dtObj.getMonth()+1;d=dtObj.getDate();}else{const pts=dv.split('/');if(pts.length>=3){y=parseInt(pts[0]);m=parseInt(pts[1]);d=parseInt(pts[2]);}else{const now=new Date();y=now.getFullYear();m=parseInt(pts[0]);d=parseInt(pts[1]||pts[0]);}}return{y,m,d};};
   const parsed=rows.filter(r=>r[0]).map(r=>{const dv=String(r[0]).trim();const{y,m,d}=toKey(dv);const key=y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');return{key,date:m+'/'+d,pcs:pn(r[4])||null,biz:pn(r[6])||null,net:pn(r[8])||null,hrs:pn(r[10])>0?pn(r[10]):null,items:pn(r[3])||null,bizOrd:pn(r[5])||null,netOrd:pn(r[7])||null};});
-  const last=parsed.slice(-21);
+  // 平均固定抓最近30筆資料（不受畫面顯示天數影響）
+  window._dailyAvgWindow=parsed.slice(-30);
+  // 畫面固定顯示20天
+  const last=parsed.slice(-20);
   if(!last.length){DAILY=[];buildDaily();return;}
   const byKey={};last.forEach(x=>byKey[x.key]=x);
   const keys=Object.keys(byKey).sort();
@@ -729,15 +759,25 @@ function procDaily(rows){
   DAILY=filled;buildDaily();
 }
 let dChart2=null;
+function fitBarWidth(scrollId,wrapId,n,perBar){
+  const scroll=document.getElementById(scrollId),inner=document.getElementById(wrapId);
+  if(!scroll||!inner)return;
+  const avail=scroll.clientWidth||300;
+  const needed=n*perBar;
+  inner.style.width=(needed>avail?needed:avail)+'px';
+}
 function buildDaily(){
   if(!DAILY.length)return;
   const labels=DAILY.map(d=>d.date);
+  fitBarWidth('dailyCScroll','dailyCWrap',labels.length,38);
+  fitBarWidth('dailyC2Scroll','dailyC2Wrap',labels.length,38);
   const tickColor=(ctx)=>DAILY[ctx.index]&&DAILY[ctx.index].holiday?'#C9B98A':'#5C4A00';
   const titleCb=(items)=>{const idx=items[0]?.dataIndex;const d=DAILY[idx];return d&&d.holiday?`${d.date}（公休/未更新）`:items[0]?.label;};
   if(dChart){dChart.destroy();dChart=null;}
-  const validTotal=DAILY.filter(x=>x.pcs!=null||x.biz!=null||x.net!=null).map(x=>(x.pcs||0)+(x.biz||0)+(x.net||0));
+  const avgSrc=(window._dailyAvgWindow||DAILY).filter(x=>new Date(x.key).getDay()!==6);
+  const validTotal=avgSrc.filter(x=>x.pcs!=null||x.biz!=null||x.net!=null).map(x=>(x.pcs||0)+(x.biz||0)+(x.net||0));
   const avgTotal=validTotal.length?validTotal.reduce((a,b)=>a+b,0)/validTotal.length:0;
-  const validHrs=DAILY.filter(x=>x.hrs!=null).map(x=>x.hrs);
+  const validHrs=avgSrc.filter(x=>x.hrs!=null).map(x=>x.hrs);
   const avgHrs=validHrs.length?validHrs.reduce((a,b)=>a+b,0)/validHrs.length:0;
   dChart=new Chart(document.getElementById('dailyC'),{data:{labels,datasets:[
     {type:'bar',label:'門市揀貨PCS',data:DAILY.map(d=>d.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',stack:'s1',order:2},
@@ -749,15 +789,21 @@ function buildDaily(){
   ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11},color:tickColor,maxRotation:45}},y:{stacked:true,position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},yHrs:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:10},color:'#F5A623'}}}}});
   if(dChart2){dChart2.destroy();dChart2=null;}
   const totalOrd=DAILY.map(d=>(d.bizOrd==null&&d.netOrd==null)?null:(d.bizOrd||0)+(d.netOrd||0));
+  const validBizOrd=avgSrc.filter(x=>x.bizOrd!=null).map(x=>x.bizOrd);
+  const avgBizOrd=validBizOrd.length?validBizOrd.reduce((a,b)=>a+b,0)/validBizOrd.length:0;
+  const validNetOrd=avgSrc.filter(x=>x.netOrd!=null).map(x=>x.netOrd);
+  const avgNetOrd=validNetOrd.length?validNetOrd.reduce((a,b)=>a+b,0)/validNetOrd.length:0;
   dChart2=new Chart(document.getElementById('dailyC2'),{data:{labels,datasets:[
     {type:'bar',label:'業務銷售單數',data:DAILY.map(d=>d.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},
     {type:'bar',label:'官網銷售單數',data:DAILY.map(d=>d.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'},
-    {type:'line',label:'總計',data:totalOrd,pointRadius:0,borderWidth:0,backgroundColor:'transparent',borderColor:'transparent',yAxisID:'y',datalabels:{display:(ctx)=>ctx.dataset.data[ctx.dataIndex]!=null,anchor:'end',align:'top',offset:2,color:'#5C4A00',font:{size:10,weight:'700'},formatter:v=>v==null?'':v.toLocaleString()}}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.dataset.label!=='總計',callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:tickColor,maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}});
+    {type:'line',label:'總計',data:totalOrd,pointRadius:0,borderWidth:0,backgroundColor:'transparent',borderColor:'transparent',yAxisID:'y',datalabels:{display:(ctx)=>ctx.dataset.data[ctx.dataIndex]!=null,anchor:'end',align:'top',offset:2,color:'#5C4A00',font:{size:10,weight:'700'},formatter:v=>v==null?'':v.toLocaleString()}},
+    {type:'line',label:'平均業務銷售單數',data:labels.map(()=>avgBizOrd),borderColor:'#1D4ED8',borderDash:[6,4],borderWidth:1.5,pointRadius:0,yAxisID:'y',order:0},
+    {type:'line',label:'平均官網銷售單數',data:labels.map(()=>avgNetOrd),borderColor:'#15803D',borderDash:[3,3],borderWidth:1.5,pointRadius:0,yAxisID:'y',order:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.dataset.label!=='總計',callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:tickColor,maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}});
 }
 // ── 月作業 ──
 function procMo(rows){MO=rows.filter(r=>r[0]).map(r=>({month:String(r[0]).trim(),pcs:pn(r[1]),bizOrd:pn(r[2]),biz:pn(r[3]),netOrd:pn(r[4]),net:pn(r[5]),inbound:pn(r[6]),hrs:pn(r[10])}));buildMo();}
-function buildMo(){if(!MO.length)return;if(mChart){mChart.destroy();mChart=null;}const d=[...MO].reverse();const fmtMonth=raw=>{const s=String(raw).trim();const dateObj=new Date(s);if(!isNaN(dateObj.getTime())&&s.length>10){return (dateObj.getFullYear())+'/'+String(dateObj.getMonth()+1).padStart(2,'0');}const pts=s.split('/');if(pts.length>=2)return pts[0]+'/'+pts[pts.length-1].padStart(2,'0');return s;};const lbs=d.map(r=>fmtMonth(r.month));mChart=new Chart(document.getElementById('moC'),{data:{labels:lbs,datasets:[{type:'bar',label:'門市揀貨PCS',data:d.map(r=>r.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'業務銷售PCS/kg',data:d.map(r=>r.biz),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'網路銷售PCS',data:d.map(r=>r.net),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y',order:1},{type:'line',label:'總工時',data:d.map(r=>r.hrs),borderColor:'#F5A623',backgroundColor:'#F5A623',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'y2',spanGaps:true,order:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.raw!==0,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00',callback:v=>v>=10000?Math.round(v/10000)+'萬':v.toLocaleString()},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:11},color:'#F5A623'}}}}});if(mChart2){mChart2.destroy();mChart2=null;}mChart2=new Chart(document.getElementById('moC2'),{data:{labels:lbs,datasets:[{type:'bar',label:'業務銷售單數',data:d.map(r=>r.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},{type:'bar',label:'網路銷售單數',data:d.map(r=>r.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}}); }
+function buildMo(){if(!MO.length)return;if(mChart){mChart.destroy();mChart=null;}const d=[...MO].reverse();fitBarWidth('moCScroll','moCWrap',d.length,55);fitBarWidth('moC2Scroll','moC2Wrap',d.length,55);const fmtMonth=raw=>{const s=String(raw).trim();const dateObj=new Date(s);if(!isNaN(dateObj.getTime())&&s.length>10){return (dateObj.getFullYear())+'/'+String(dateObj.getMonth()+1).padStart(2,'0');}const pts=s.split('/');if(pts.length>=2)return pts[0]+'/'+pts[pts.length-1].padStart(2,'0');return s;};const lbs=d.map(r=>fmtMonth(r.month));mChart=new Chart(document.getElementById('moC'),{data:{labels:lbs,datasets:[{type:'bar',label:'門市揀貨PCS',data:d.map(r=>r.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'業務銷售PCS/kg',data:d.map(r=>r.biz),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'網路銷售PCS',data:d.map(r=>r.net),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y',order:1},{type:'line',label:'總工時',data:d.map(r=>r.hrs),borderColor:'#F5A623',backgroundColor:'#F5A623',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'y2',spanGaps:true,order:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.raw!==0,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00',callback:v=>v>=10000?Math.round(v/10000)+'萬':v.toLocaleString()},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:11},color:'#F5A623'}}}}});if(mChart2){mChart2.destroy();mChart2=null;}mChart2=new Chart(document.getElementById('moC2'),{data:{labels:lbs,datasets:[{type:'bar',label:'業務銷售單數',data:d.map(r=>r.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},{type:'bar',label:'網路銷售單數',data:d.map(r=>r.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}}); }
 // ── 促銷活動 ──
 function procPromo(rows){PROMO=rows.filter(r=>r[0]&&r[2]);buildPromo();}
 function buildPromo(){if(!PROMO.length){document.getElementById('promoL').innerHTML='<div style="text-align:center;padding:30px;color:#8B7000">無促銷活動資料</div>';return;}const today=new Date();const cur=String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');const fmtD=str=>{const pts=String(str).trim().split(/[\/\-]/);if(pts.length>=3)return parseInt(pts[1])+'/'+parseInt(pts[2]);if(pts.length===2)return parseInt(pts[0])+'/'+parseInt(pts[1]);return String(str);};const toMD=str=>{const pts=String(str).trim().split(/[\/\-]/);let m,d;if(pts.length>=3){m=pts[1];d=pts[2];}else if(pts.length===2){m=pts[0];d=pts[1];}else return'';return String(parseInt(m)).padStart(2,'0')+String(parseInt(d)).padStart(2,'0');};document.getElementById('promoL').innerHTML=PROMO.map(p=>{const act=toMD(String(p[0]))<=cur&&toMD(String(p[1]))>=cur;return`<div class="pi" style="${act?'border-color:#C89B00;background:#FFF8CC':''}" ><div class="ph"><span class="pn" style="color:#AE0000">${p[2]}${act?'<span class="tag">進行中</span>':''}</span><span class="pd" style="color:#AE0000;font-weight:600">${fmtD(String(p[0]))}～${fmtD(String(p[1]))}</span></div><div class="pb2">${String(p[3]).replace(/\n/g,'<br>')}</div></div>`;}).join('');}
