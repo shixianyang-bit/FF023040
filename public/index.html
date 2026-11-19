@@ -762,7 +762,9 @@ let dChart2=null;
 function fitBarWidth(scrollId,wrapId,n,perBar){
   const scroll=document.getElementById(scrollId),inner=document.getElementById(wrapId);
   if(!scroll||!inner)return;
-  const avail=scroll.clientWidth||300;
+  // 用一定看得到的 .wrap 寬度當基準（scroll所在分頁可能還是隱藏的 display:none，clientWidth會是0）
+  const wrapEl=document.querySelector('.wrap');
+  const avail=Math.max((wrapEl?wrapEl.clientWidth-56:0)||scroll.clientWidth||300,280);
   const needed=n*perBar;
   inner.style.width=(needed>avail?needed:avail)+'px';
 }
