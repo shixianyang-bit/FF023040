@@ -10,17 +10,17 @@
 body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:#f7f2e8;color:#2C2600;padding:14px 20px 24px}
 .wrap{max-width:none;margin:0 auto}
 .hdr{background:transparent;padding:6px 2px 12px;border-radius:0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.hdr-t{font-size:24px;font-weight:800;color:#2C2600;letter-spacing:.5px}
+.hdr-t{font-size:28px;font-weight:800;color:#2C2600;letter-spacing:.5px}
 .hdr-t::before{content:'📦 '}
-.hdr-s{font-size:11px;color:#5C4A00;margin-top:3px}
-.reload-btn{padding:8px 18px;background:#FFE9A0;border:none;border-radius:999px;font-size:13px;font-weight:700;color:#5C4A00;cursor:pointer}
+.hdr-s{font-size:13px;color:#5C4A00;margin-top:3px}
+.reload-btn{padding:8px 18px;background:#FFE9A0;border:none;border-radius:999px;font-size:15px;font-weight:700;color:#5C4A00;cursor:pointer}
 .reload-btn:hover{background:#F5C400}
 .lbar{background:#EFE6CC;height:3px;display:none;border-radius:3px;margin-bottom:6px}
 .lbar.on{display:block}
 .lbar-i{height:100%;background:#C89B00;width:0%;transition:width .3s}
-.tabs{display:flex;background:transparent;border-bottom:1.5px solid #E6DCC0;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.tabs{overflow-y:hidden;display:flex;background:transparent;border-bottom:1.5px solid #E6DCC0;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .tabs::-webkit-scrollbar{height:4px}
-.tab{padding:13px 14px;font-size:14px;font-weight:500;cursor:pointer;color:#7A6A3A;border-bottom:3px solid transparent;margin-bottom:-1.5px;white-space:nowrap;flex:1 1 0;text-align:center}
+.tab{padding:15px 14px;font-size:17px;font-weight:500;cursor:pointer;color:#7A6A3A;border-bottom:3px solid transparent;margin-bottom:-1.5px;white-space:nowrap;flex:1 1 0;text-align:center}
 .tab:last-child{border-right:none}
 .tab.active{background:transparent;color:#2C2600;font-weight:700;border-bottom-color:#E0A800}
 .tab:hover:not(.active){background:rgba(245,196,0,.14)}
@@ -29,58 +29,60 @@ body{font-family:'Microsoft JhengHei','PingFang TC',sans-serif;background:#f7f2e
 .tlb{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 .sw{position:relative;flex:1;min-width:160px}
 .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#C89B00;pointer-events:none}
-input.sq{width:100%;padding:8px 10px 8px 30px;border:1.5px solid #F5C400;border-radius:8px;font-size:13px;background:#FFFBE6;color:#2C2600;outline:none;font-family:inherit}
+input.sq{width:100%;padding:10px 12px 10px 34px;border:1.5px solid #F5C400;border-radius:8px;font-size:16px;background:#FFFBE6;color:#2C2600;outline:none;font-family:inherit}
 input.sq:focus{border-color:#C89B00;background:#fff}
-select.fl{padding:8px 10px;border:1.5px solid #F5C400;border-radius:8px;font-size:12px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-family:inherit}
+select.fl{padding:10px 12px;border:1.5px solid #F5C400;border-radius:8px;font-size:15px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-family:inherit}
 .tw{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
-th{background:#F5C400;color:#2C2600;font-weight:700;padding:8px;text-align:left;font-size:12px;white-space:nowrap;cursor:pointer;user-select:none;overflow:hidden;text-overflow:ellipsis}
+table{width:100%;border-collapse:collapse;font-size:15px;table-layout:fixed}
+th{background:#F5C400;color:#2C2600;font-weight:700;padding:11px 10px;text-align:left;font-size:15px;white-space:nowrap;cursor:pointer;user-select:none;overflow:hidden;text-overflow:ellipsis}
 th.r{text-align:right}
 th:hover{background:#EBB800}
 th .ar::after{content:'⇅';margin-left:3px;font-size:10px;opacity:.4}
 th.sa .ar::after{content:'▲';opacity:1}
 th.sd .ar::after{content:'▼';opacity:1}
-td{padding:7px 8px;border-bottom:1px solid #FFF0A0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#2C2600;font-size:13px}
+td{padding:10px 10px;border-bottom:1px solid #FFF0A0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#2C2600;font-size:16px}
 tr:hover td{background:#FFFACC}
 tr:nth-child(even) td{background:#FFFDF0}
 tr:nth-child(even):hover td{background:#FFFACC}
 td.r{text-align:right;font-variant-numeric:tabular-nums}
-.pg{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:8px 6px;font-size:12px;color:#6B5300;border-top:1px solid #FFF0A0}
-.pb{padding:4px 12px;border:1.5px solid #F5C400;border-radius:6px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-size:12px;font-family:inherit}
+.pg{display:flex;align-items:center;justify-content:flex-end;gap:6px;padding:10px 6px;font-size:15px;color:#6B5300;border-top:1px solid #FFF0A0}
+.pb{padding:6px 16px;border:1.5px solid #F5C400;border-radius:8px;background:#FFFBE6;color:#2C2600;cursor:pointer;font-size:15px;font-family:inherit}
 .pb:hover{background:#F5C400}.pb:disabled{opacity:.4;cursor:default}
-.ci{font-size:12px;color:#8B7000;margin-bottom:6px}
+.ci{font-size:15px;color:#8B7000;margin-bottom:6px}
 .dp{background:#FFFBE6;border:1.5px solid #F5C400;border-radius:10px;padding:14px;margin-bottom:14px}
 .ordc{background:#fff;border:1.5px solid #F5C400;border-radius:10px;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .ordc-hdr{background:#F7A05C;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
-.ordc-no{font-size:13px;font-weight:700;color:#2C2600}
-.ordc-no span{font-size:11px;font-weight:400;color:#5C4A00;margin-right:6px}
-.ordc-due{font-size:11px;background:#AE0000;color:#fff;padding:3px 9px;border-radius:999px;font-weight:700}
+.ordc-no{font-size:16px;font-weight:700;color:#2C2600}
+.ordc-no span{font-size:13px;font-weight:400;color:#5C4A00;margin-right:6px}
+.ordc-due{font-size:14px;background:#AE0000;color:#fff;padding:3px 9px;border-radius:999px;font-weight:700}
 .ordc-body{padding:12px 14px}
-.dt{font-size:14px;font-weight:700;color:#2C2600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dt{font-size:17px;font-weight:700;color:#2C2600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .dc{cursor:pointer;font-size:20px;color:#8B7000;margin-left:auto;padding:0 4px}
 .dc:hover{color:#2C2600}
 .ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
 .ic{background:#fff;border:1px solid #F5C400;border-radius:8px;padding:10px;text-align:center}
-.il{font-size:11px;color:#8B7000;margin-bottom:3px}
-.iv{font-size:15px;font-weight:700;color:#2C2600}
-.st{font-size:12px;font-weight:700;color:#5C4A00;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid #FFE066}
+.il{font-size:13px;color:#8B7000;margin-bottom:3px}
+.iv{font-size:18px;font-weight:700;color:#2C2600}
+.st{font-size:15px;font-weight:700;color:#5C4A00;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid #FFE066}
 .cr{cursor:pointer}
 .cr:hover td{background:#FFF0A0!important}
 .sr td{background:#FFE066!important;font-weight:600}
 .pi{border:1.5px solid #F5C400;border-radius:8px;padding:10px 14px;margin-bottom:8px;background:#FFFBE6}
 .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px}
-.pn{font-weight:700;font-size:13px}
-.pd{font-size:11px}
-.pb2{font-size:12px;color:#5C4A00;line-height:1.6}
+.pn{font-weight:700;font-size:16px}
+.pd{font-size:14px}
+.pb2{font-size:15px;color:#5C4A00;line-height:1.6}
 .tag{background:#AE0000;color:#fff;font-size:10px;padding:2px 7px;border-radius:999px;font-weight:700;margin-left:6px}
 .cw{position:relative;width:100%;height:300px}
 .cw2{position:relative;width:100%;height:320px}
 .cwScroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#5C4A00;margin-bottom:10px}
-.spinner{text-align:center;padding:40px;color:#8B7000;font-size:14px}
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:15px;color:#5C4A00;margin-bottom:10px}
+.spinner{text-align:center;padding:40px;color:#8B7000;font-size:16px}
 .err{background:#fff3cd;border:1px solid #F5C400;border-radius:8px;padding:14px;margin:10px 0;font-size:13px;color:#5C4A00;line-height:1.8}
-.chdr{background:#F5C400;padding:10px 16px;border-radius:8px 8px 0 0;font-size:15px;font-weight:700;color:#2C2600}
+.chdr{background:#F5C400;padding:10px 16px;border-radius:8px 8px 0 0;font-size:18px;font-weight:700;color:#2C2600}
 .cbox{border:1.5px solid #F5C400;border-top:none;border-radius:0 0 8px 8px;background:#fff;padding:14px}
+#mo .cwScroll,#mo .leg{max-width:1200px;margin-left:auto;margin-right:auto}
+#mo .leg{margin-bottom:10px}
 @media(max-width:600px){
   body{padding:8px}
   .hdr{padding:10px 12px}
@@ -190,7 +192,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="ci" id="invI"></div>
   <div class="cards" id="invCards"></div>
   <div class="tw tbl-d"><table>
-    <colgroup><col style="width:108px"><col><col style="width:42px"><col style="width:54px"><col style="width:54px"><col style="width:54px"><col style="width:60px"><col style="width:60px"></colgroup>
+    <colgroup><col style="width:13%"><col style="width:33%"><col style="width:6%"><col style="width:9.6%"><col style="width:9.6%"><col style="width:9.6%"><col style="width:9.6%"><col style="width:9.6%"></colgroup>
     <thead><tr>
       <th onclick="iS('code')">商品代號<span class="ar"></span></th>
       <th onclick="iS('name')">商品名稱<span class="ar"></span></th>
@@ -225,7 +227,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     </select>
   </div>
   <!-- 欄位勾選 -->
-  <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:12px;color:#5C4A00">
+  <div style="display:flex;gap:10px;flex-wrap:wrap;padding:8px 0;font-size:14px;color:#5C4A00">
     <label style="cursor:pointer"><input type="checkbox" id="chkTransf" checked onchange="rSD()"> 門市調撥數</label>
     <label style="cursor:pointer"><input type="checkbox" id="chkWeb" checked onchange="rSD()"> 官網銷售數</label>
     <label style="cursor:pointer"><input type="checkbox" id="chkBiz" checked onchange="rSD()"> 業務銷售數</label>
@@ -248,7 +250,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
       <span><span style="display:inline-block;width:20px;height:3px;background:#F5A623;vertical-align:middle;margin-right:4px;border-radius:2px"></span>總工時</span>
       <span style="color:#B08968"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #B08968;vertical-align:middle;margin-right:4px"></span>平均總出貨量</span>
       <span style="color:#C9871A"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #C9871A;vertical-align:middle;margin-right:4px"></span>平均總工時</span>
-      <span style="color:#C9B98A;font-size:11px">（淺色日期＝公休/未更新）</span>
+      <span style="color:#C9B98A;font-size:13px">（淺色日期＝公休/未更新）</span>
     </div>
     <div class="cwScroll" id="dailyCScroll"><div class="cw" id="dailyCWrap" style="height:260px"><canvas id="dailyC"></canvas></div></div>
   </div>
@@ -259,7 +261,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
       <span><span style="display:inline-block;width:12px;height:12px;background:#22C55E;vertical-align:middle;margin-right:4px;border-radius:2px"></span>官網銷售單數</span>
       <span style="color:#1D4ED8"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #1D4ED8;vertical-align:middle;margin-right:4px"></span>平均業務單數</span>
       <span style="color:#15803D"><span style="display:inline-block;width:20px;height:0;border-top:2px dashed #15803D;vertical-align:middle;margin-right:4px"></span>平均官網單數</span>
-      <span style="font-size:11px;color:#8B7000">（數字＝當日總單數，平均不含週六）</span>
+      <span style="font-size:13px;color:#8B7000">（數字＝當日總單數，平均不含週六）</span>
     </div>
     <div class="cwScroll" id="dailyC2Scroll"><div class="cw" id="dailyC2Wrap" style="height:220px"><canvas id="dailyC2"></canvas></div></div>
   </div>
@@ -274,7 +276,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="cbox" style="margin-bottom:14px">
     <div class="leg">
       <span><span style="display:inline-block;width:12px;height:12px;background:#F5A623;vertical-align:middle;margin-right:4px;border-radius:2px"></span>未出張數</span>
-      <span style="font-size:11px;color:#8B7000;margin-left:8px" id="eiqDStat"></span>
+      <span style="font-size:13px;color:#8B7000;margin-left:8px" id="eiqDStat"></span>
     </div>
     <div class="cwScroll" id="eiqDCScroll"><div class="cw" id="eiqDCWrap" style="height:240px"><canvas id="eiqDC"></canvas></div></div>
   </div>
@@ -282,13 +284,13 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
   <div class="cbox" style="margin-bottom:14px">
     <div class="leg">
       <span><span style="display:inline-block;width:12px;height:12px;background:#3B82F6;vertical-align:middle;margin-right:4px;border-radius:2px"></span>訂單數</span>
-      <span style="font-size:11px;color:#8B7000;margin-left:8px" id="eiqEStat"></span>
+      <span style="font-size:13px;color:#8B7000;margin-left:8px" id="eiqEStat"></span>
     </div>
     <div class="cw" style="height:240px"><canvas id="eiqEC"></canvas></div>
   </div>
   <div class="chdr" style="margin-bottom:0">I分析：商品訂單頻率 TOP 20</div>
   <div class="cbox" style="margin-bottom:14px">
-    <div style="font-size:11px;color:#8B7000;margin-bottom:8px" id="eiqIStat"></div>
+    <div style="font-size:13px;color:#8B7000;margin-bottom:8px" id="eiqIStat"></div>
     <div class="cw" style="height:520px"><canvas id="eiqIC"></canvas></div>
   </div>
   <div class="chdr" style="margin-bottom:0">未出品項明細</div>
@@ -304,7 +306,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums}
     <div class="ci" id="eiqCI"></div>
     <div class="cards" id="eiqCards"></div>
     <div class="tw tbl-d"><table>
-      <colgroup><col style="width:110px"><col><col style="width:70px"><col style="width:70px"><col style="width:90px"></colgroup>
+      <colgroup><col style="width:14%"><col style="width:44%"><col style="width:13%"><col style="width:13%"><col style="width:16%"></colgroup>
       <thead><tr>
         <th>商品代號</th><th>商品名稱</th>
         <th class="r" onclick="eiqSort('z01')" style="cursor:pointer">Z01<span id="eiqSZ"> ⇅</span></th>
@@ -399,7 +401,7 @@ function rInv(){ip=0;const q=document.getElementById('invQ').value.toLowerCase()
 const iCM={code:0,name:1,a01:3,b01:4,b02:5,z01:6,fu:7};
 function iS(c){if(iSC===c)iAsc=!iAsc;else{iSC=c;iAsc=c==='code'||c==='name';}ip=0;applyI();}
 function applyI(){const ci=iCM[iSC];iF.sort((a,b)=>typeof a[ci]==='string'?(iAsc?a[ci].localeCompare(b[ci],'zh'):b[ci].localeCompare(a[ci],'zh')):(iAsc?a[ci]-b[ci]:b[ci]-a[ci]));document.querySelectorAll('#inv thead th').forEach(th=>th.classList.remove('sa','sd'));['code','name',null,'a01','b01','b02','z01','fu'].forEach((c,i)=>{if(c===iSC)document.querySelectorAll('#inv thead th')[i].classList.add(iAsc?'sa':'sd');});drwI();}
-function drwI(){const PG=20,s=ip*PG,sl=iF.slice(s,s+PG),t=iF.length,pg=Math.ceil(t/PG)||1;document.getElementById('invB').innerHTML=sl.length?sl.map(r=>`<tr><td style="font-size:11px;color:#8B7000">${r[0]}</td><td>${r[1]}</td><td style="color:#8B7000">${r[2]}</td><td class="r">${r[3]||'−'}</td><td class="r">${r[4]||'−'}</td><td class="r">${r[5]||'−'}</td><td class="r" style="font-weight:700">${n2s(r[6])}</td><td class="r">${n2s(r[7])}</td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';const cardsEl=document.getElementById('invCards');if(cardsEl){const chip=(l,v)=>`<span class="chip${v?'':' zero'}">${l}<b>${n2s(v)}</b></span>`;cardsEl.innerHTML=sl.length?sl.map(r=>`<div class="ccard"><div class="cc-top"><div><div class="cc-name">${r[1]||'（無名稱）'}</div><div class="cc-code">${r[0]}${r[2]?' · '+r[2]:''}</div></div><div class="cc-main"><b>${n2s(r[6])}</b><span>Z01主倉</span></div></div><div class="cc-chips">${chip('A01',r[3])}${chip('B01',r[4])}${chip('B02',r[5])}${chip('輔翼',r[7])}</div></div>`).join(''):'<div style="text-align:center;padding:20px;color:#8B7000">無符合資料</div>';}document.getElementById('invI').textContent=`顯示 ${s+1}–${Math.min(s+PG,t)} / 共 ${t} 筆`;document.getElementById('invP').textContent=`${ip+1}/${pg}頁`;document.getElementById('invPv').disabled=ip===0;document.getElementById('invNx').disabled=ip>=pg-1;}
+function drwI(){const PG=20,s=ip*PG,sl=iF.slice(s,s+PG),t=iF.length,pg=Math.ceil(t/PG)||1;document.getElementById('invB').innerHTML=sl.length?sl.map(r=>`<tr><td style="font-size:13px;color:#8B7000">${r[0]}</td><td>${r[1]}</td><td style="color:#8B7000">${r[2]}</td><td class="r">${r[3]||'−'}</td><td class="r">${r[4]||'−'}</td><td class="r">${r[5]||'−'}</td><td class="r" style="font-weight:700">${n2s(r[6])}</td><td class="r">${n2s(r[7])}</td></tr>`).join(''):'<tr><td colspan="8" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>';const cardsEl=document.getElementById('invCards');if(cardsEl){const chip=(l,v)=>`<span class="chip${v?'':' zero'}">${l}<b>${n2s(v)}</b></span>`;cardsEl.innerHTML=sl.length?sl.map(r=>`<div class="ccard"><div class="cc-top"><div><div class="cc-name">${r[1]||'（無名稱）'}</div><div class="cc-code">${r[0]}${r[2]?' · '+r[2]:''}</div></div><div class="cc-main"><b>${n2s(r[6])}</b><span>Z01主倉</span></div></div><div class="cc-chips">${chip('A01',r[3])}${chip('B01',r[4])}${chip('B02',r[5])}${chip('輔翼',r[7])}</div></div>`).join(''):'<div style="text-align:center;padding:20px;color:#8B7000">無符合資料</div>';}document.getElementById('invI').textContent=`顯示 ${s+1}–${Math.min(s+PG,t)} / 共 ${t} 筆`;document.getElementById('invP').textContent=`${ip+1}/${pg}頁`;document.getElementById('invPv').disabled=ip===0;document.getElementById('invNx').disabled=ip>=pg-1;}
 function iP(d){ip+=d;drwI();}
 // ── 可售天數 ──
 // ── 近30日銷售調撥資料 ──
@@ -464,7 +466,7 @@ function drwSD(){
   const arw=k=>sdSC===k?(sdAsc?' ▲':' ▼'):' ⇅';
 
   const html=`<table>
-    <colgroup><col><col style="width:42px">${cols.map(c=>`<col style="width:${c.w}">`).join('')}</colgroup>
+    <colgroup><col><col style="width:6%">${cols.map(c=>`<col style="width:${Math.min(12,54/cols.length).toFixed(1)}%">`).join('')}</colgroup>
     <thead><tr>
       <th onclick="sdS('name')" style="cursor:pointer">商品名稱${arw('name')}</th>
       <th>單位</th>
@@ -472,8 +474,8 @@ function drwSD(){
     </tr></thead>
     <tbody>${sl.length
       ?sl.map(r=>`<tr class="cr${selS===r.code?' sr':''}" onclick="showSD('${r.code}')">
-        <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:11px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
-        <td style="color:#8B7000;font-size:11px;text-align:center">${r.unit}</td>
+        <td style="color:#5C4A00;text-decoration:underline"><span style="font-size:13px;color:#8B7000;margin-right:4px">${r.code}</span>${r.name}</td>
+        <td style="color:#8B7000;font-size:13px;text-align:center">${r.unit}</td>
         ${cols.map(c=>`<td class="r">${r[c.key]?(c.key==='days'?n2f(r[c.key]):n2s(Math.round(r[c.key]))):'-'}</td>`).join('')}
       </tr>`).join('')
       :`<tr><td colspan="${totalCols}" style="text-align:center;padding:20px;color:#8B7000">無符合資料</td></tr>`}
@@ -494,11 +496,11 @@ function showSD(code){
   const tfH=tf.length>0
     ?`<div class="st">各門市調撥明細（合計 ${n2s(Math.round(tfTotal))}）</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px;margin-top:6px">
-        ${tf.map(t=>`<div style="background:#fff;border:1px solid #F5C400;border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;font-size:12px"><span style="color:#5C4A00">${t.s}</span><strong>${n2s(t.q)}</strong></div>`).join('')}
+        ${tf.map(t=>`<div style="background:#fff;border:1px solid #F5C400;border-radius:6px;padding:7px 10px;display:flex;justify-content:space-between;font-size:14px"><span style="color:#5C4A00">${t.s}</span><strong>${n2s(t.q)}</strong></div>`).join('')}
       </div>`
-    :(r.transf>0?`<div class="st">各門市調撥明細</div><div style="font-size:12px;color:#8B7000;padding:6px 0">合計 <strong>${n2s(Math.round(r.transf))}</strong></div>`:'');
+    :(r.transf>0?`<div class="st">各門市調撥明細</div><div style="font-size:14px;color:#8B7000;padding:6px 0">合計 <strong>${n2s(Math.round(r.transf))}</strong></div>`:'');
   const p=document.getElementById('sdDP');p.style.display='block';
-  p.innerHTML=`<div class="dp"><div class="dt">📦 <span style="font-size:11px;color:#8B7000;font-weight:400;margin-right:4px">${r.code}</span>${r.name}<span class="dc" onclick="closeSDD()">✕</span></div>
+  p.innerHTML=`<div class="dp"><div class="dt">📦 <span style="font-size:13px;color:#8B7000;font-weight:400;margin-right:4px">${r.code}</span>${r.name}<span class="dc" onclick="closeSDD()">✕</span></div>
     <div class="ig">
       <div class="ic"><div class="il">門市調撥數</div><div class="iv">${n2s(Math.round(r.transf))}</div></div>
       <div class="ic"><div class="il">官網銷售數</div><div class="iv">${n2s(Math.round(r.webQty))}</div></div>
@@ -557,7 +559,7 @@ function drwBizUs(){
       <div class="ordc-hdr">
         <div class="ordc-no"><span>${o.custCode}</span>${o.custName}<span style="margin-left:10px;font-weight:400">單號：${o.orderNo}</span></div>
         <div style="display:flex;gap:8px;align-items:center">
-          <span style="font-size:11px;color:#5C4A00">訂單日期 ${fmtDateYMD(o.orderDate)}</span>
+          <span style="font-size:13px;color:#5C4A00">訂單日期 ${fmtDateYMD(o.orderDate)}</span>
           <span class="ordc-due">預計銷貨 ${fmtDateYMD(o.dueDate)}</span>
         </div>
       </div>
@@ -568,7 +570,7 @@ function drwBizUs(){
           <tbody>${o.items.map(it=>{
             const stockSum=(it.b01||0)+(it.b02||0)+(it.fu||0);
             const warn=it.qty>stockSum?' <span title="訂單數量超過可調撥庫存(B01+B02+輔翼)" style="color:#AE0000;font-weight:700">⚠</span>':'';
-            return `<tr><td style="font-size:11px;color:#8B7000">${it.code}</td><td>${it.name}</td><td class="r" style="font-weight:700">${n2f(it.qty)}${warn}</td><td class="r">${n2s(it.b01)}</td><td class="r">${n2s(it.b02)}</td><td class="r">${n2s(it.z01)}</td><td class="r">${n2s(it.fu)}</td></tr>`;
+            return `<tr><td style="font-size:13px;color:#8B7000">${it.code}</td><td>${it.name}</td><td class="r" style="font-weight:700">${n2f(it.qty)}${warn}</td><td class="r">${n2s(it.b01)}</td><td class="r">${n2s(it.b02)}</td><td class="r">${n2s(it.z01)}</td><td class="r">${n2s(it.fu)}</td></tr>`;
           }).join('')}</tbody>
         </table></div>
       </div>
@@ -691,7 +693,7 @@ function buildDateChart(){
         onClick:(evt,elements)=>{ if(elements&&elements.length) eiqSelectDate(dLabels[elements[0].index]); },
         plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label} 未出 ${n2s(c.raw)} 張`}}},
         scales:{x:{grid:{display:false},ticks:{color:'#5C4A00',maxRotation:45}},
-                y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'未出張數',color:'#5C4A00',font:{size:10}}}}}
+                y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'未出張數',color:'#5C4A00',font:{size:12}}}}}
     });
   }else{
     document.getElementById('eiqDStat').textContent='';
@@ -719,7 +721,7 @@ function buildEIQCharts(stats){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${n2s(c.raw)} 張（${totalOrders?(c.raw/totalOrders*100).toFixed(1):'0'}%）`}}},
       scales:{x:{grid:{display:false},ticks:{color:'#5C4A00'}},
-              y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:10}}}}}
+              y:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00'},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:12}}}}}
   });
 
   // I圖：TOP20
@@ -740,8 +742,8 @@ function buildEIQCharts(stats){
         label:c=>`${n2s(c.raw)} 張（${iFreq[c.dataIndex]}%）`
       }}},
       scales:{
-        x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00',font:{size:11}},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:11}}},
-        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:11},autoSkip:false},afterFit(axis){axis.width=220;}}
+        x:{grid:{color:'rgba(200,180,0,.15)'},ticks:{color:'#5C4A00',font:{size:13}},title:{display:true,text:'訂單數',color:'#5C4A00',font:{size:13}}},
+        y:{grid:{display:false},ticks:{color:'#5C4A00',font:{size:13},autoSkip:false},afterFit(axis){axis.width=220;}}
       }}
   });
 
@@ -790,7 +792,7 @@ function drwEIQ(){
         const name=nameMap2[code]||nameMap[code]||'';
         const z01=invMap[code]?.z01||0, fu=invMap[code]?.fu||0;
         const warn=qty*1.2>fu?' <span title="未出量*1.2 超過輔翼庫存" style="color:#AE0000;font-weight:700">⚠</span>':'';
-        return `<tr><td style="font-size:11px;color:#8B7000">${code}</td><td>${name}</td><td class="r">${n2s(z01)}</td><td class="r">${n2s(fu)}</td><td class="r" style="font-weight:700">${n2s(qty)}${warn}</td></tr>`;
+        return `<tr><td style="font-size:13px;color:#8B7000">${code}</td><td>${name}</td><td class="r">${n2s(z01)}</td><td class="r">${n2s(fu)}</td><td class="r" style="font-weight:700">${n2s(qty)}${warn}</td></tr>`;
       }).join('')
     : '<tr><td colspan="5" style="text-align:center;color:#8B7000;padding:16px">無資料</td></tr>';
   const cardsEl=document.getElementById('eiqCards');
@@ -832,15 +834,21 @@ function procDaily(rows){
   DAILY=filled;buildDaily();
 }
 let dChart2=null;
-function fitBarWidth(scrollId,wrapId,n,perBar){
-  const scroll=document.getElementById(scrollId),inner=document.getElementById(wrapId);
-  if(!scroll||!inner)return;
-  // 用一定看得到的 .wrap 寬度當基準（scroll所在分頁可能還是隱藏的 display:none，clientWidth會是0）
+window._fitReg={};
+function applyFit(wrapId){
+  const r=window._fitReg[wrapId];if(!r)return;
+  const inner=document.getElementById(wrapId);if(!inner)return;
   const wrapEl=document.querySelector('.wrap');
-  const avail=Math.max((wrapEl?wrapEl.clientWidth-56:0)||scroll.clientWidth||300,280);
-  const needed=n*perBar;
-  inner.style.width=(needed>avail?needed:avail)+'px';
+  const avail=Math.max((wrapEl?wrapEl.clientWidth-80:0)||280,280);
+  const needed=r.n*r.perBar;
+  inner.style.width=needed>avail?needed+'px':'100%';
 }
+function fitBarWidth(scrollId,wrapId,n,perBar){
+  window._fitReg[wrapId]={n,perBar};
+  applyFit(wrapId);
+}
+let _fitT=null;
+window.addEventListener('resize',()=>{clearTimeout(_fitT);_fitT=setTimeout(()=>Object.keys(window._fitReg).forEach(applyFit),150);});
 function buildDaily(){
   if(!DAILY.length)return;
   const labels=DAILY.map(d=>d.date);
@@ -861,7 +869,7 @@ function buildDaily(){
     {type:'line',label:'平均總出貨量',data:labels.map(()=>avgTotal),borderColor:'#B08968',borderDash:[6,4],borderWidth:1.5,pointRadius:0,yAxisID:'y',order:0},
     {type:'line',label:'總工時',data:DAILY.map(d=>d.hrs),borderColor:'#F5A623',backgroundColor:'transparent',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'yHrs',spanGaps:true,order:1},
     {type:'line',label:'平均總工時',data:labels.map(()=>avgHrs),borderColor:'#C9871A',borderDash:[3,3],borderWidth:1.5,pointRadius:0,yAxisID:'yHrs',order:0}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11},color:tickColor,maxRotation:45}},y:{stacked:true,position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},yHrs:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:10},color:'#F5A623'}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:13},color:tickColor,maxRotation:45}},y:{stacked:true,position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:13},color:'#5C4A00'},title:{display:true,text:'PCS / kg',font:{size:12},color:'#5C4A00'}},yHrs:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:13},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:12},color:'#F5A623'}}}}});
   if(dChart2){dChart2.destroy();dChart2=null;}
   const totalOrd=DAILY.map(d=>(d.bizOrd==null&&d.netOrd==null)?null:(d.bizOrd||0)+(d.netOrd||0));
   const validBizOrd=avgSrc.filter(x=>x.bizOrd!=null).map(x=>x.bizOrd);
@@ -871,14 +879,14 @@ function buildDaily(){
   dChart2=new Chart(document.getElementById('dailyC2'),{data:{labels,datasets:[
     {type:'bar',label:'業務銷售單數',data:DAILY.map(d=>d.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},
     {type:'bar',label:'官網銷售單數',data:DAILY.map(d=>d.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'},
-    {type:'line',label:'總計',data:totalOrd,pointRadius:0,borderWidth:0,backgroundColor:'transparent',borderColor:'transparent',yAxisID:'y',datalabels:{display:(ctx)=>ctx.dataset.data[ctx.dataIndex]!=null,anchor:'end',align:'top',offset:2,color:'#5C4A00',font:{size:10,weight:'700'},formatter:v=>v==null?'':v.toLocaleString()}},
+    {type:'line',label:'總計',data:totalOrd,pointRadius:0,borderWidth:0,backgroundColor:'transparent',borderColor:'transparent',yAxisID:'y',datalabels:{display:(ctx)=>ctx.dataset.data[ctx.dataIndex]!=null,anchor:'end',align:'top',offset:2,color:'#5C4A00',font:{size:12,weight:'700'},formatter:v=>v==null?'':v.toLocaleString()}},
     {type:'line',label:'平均業務銷售單數',data:labels.map(()=>avgBizOrd),borderColor:'#1D4ED8',borderDash:[6,4],borderWidth:1.5,pointRadius:0,yAxisID:'y',order:0},
     {type:'line',label:'平均官網銷售單數',data:labels.map(()=>avgNetOrd),borderColor:'#15803D',borderDash:[3,3],borderWidth:1.5,pointRadius:0,yAxisID:'y',order:0}
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.dataset.label!=='總計',callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:11},color:tickColor,maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.dataset.label!=='總計',callbacks:{title:titleCb,label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString(undefined,{maximumFractionDigits:1})}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:13},color:tickColor,maxRotation:45}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:13},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:12},color:'#5C4A00'}}}}});
 }
 // ── 月作業 ──
 function procMo(rows){MO=rows.filter(r=>r[0]).map(r=>({month:String(r[0]).trim(),pcs:pn(r[1]),bizOrd:pn(r[2]),biz:pn(r[3]),netOrd:pn(r[4]),net:pn(r[5]),inbound:pn(r[6]),hrs:pn(r[10])}));buildMo();}
-function buildMo(){if(!MO.length)return;if(mChart){mChart.destroy();mChart=null;}const d=[...MO].reverse();fitBarWidth('moCScroll','moCWrap',d.length,55);fitBarWidth('moC2Scroll','moC2Wrap',d.length,55);const fmtMonth=raw=>{const s=String(raw).trim();const dateObj=new Date(s);if(!isNaN(dateObj.getTime())&&s.length>10){return (dateObj.getFullYear())+'/'+String(dateObj.getMonth()+1).padStart(2,'0');}const pts=s.split('/');if(pts.length>=2)return pts[0]+'/'+pts[pts.length-1].padStart(2,'0');return s;};const lbs=d.map(r=>fmtMonth(r.month));mChart=new Chart(document.getElementById('moC'),{data:{labels:lbs,datasets:[{type:'bar',label:'門市揀貨PCS',data:d.map(r=>r.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'業務銷售PCS/kg',data:d.map(r=>r.biz),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'網路銷售PCS',data:d.map(r=>r.net),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y',order:1},{type:'line',label:'總工時',data:d.map(r=>r.hrs),borderColor:'#F5A623',backgroundColor:'#F5A623',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'y2',spanGaps:true,order:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.raw!==0,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00',callback:v=>v>=10000?Math.round(v/10000)+'萬':v.toLocaleString()},title:{display:true,text:'PCS / kg',font:{size:10},color:'#5C4A00'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:11},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:11},color:'#F5A623'}}}}});if(mChart2){mChart2.destroy();mChart2=null;}mChart2=new Chart(document.getElementById('moC2'),{data:{labels:lbs,datasets:[{type:'bar',label:'業務銷售單數',data:d.map(r=>r.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},{type:'bar',label:'網路銷售單數',data:d.map(r=>r.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:12},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:11},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:10},color:'#5C4A00'}}}}}); }
+function buildMo(){if(!MO.length)return;if(mChart){mChart.destroy();mChart=null;}const d=[...MO].reverse();fitBarWidth('moCScroll','moCWrap',d.length,55);fitBarWidth('moC2Scroll','moC2Wrap',d.length,55);const fmtMonth=raw=>{const s=String(raw).trim();const dateObj=new Date(s);if(!isNaN(dateObj.getTime())&&s.length>10){return (dateObj.getFullYear())+'/'+String(dateObj.getMonth()+1).padStart(2,'0');}const pts=s.split('/');if(pts.length>=2)return pts[0]+'/'+pts[pts.length-1].padStart(2,'0');return s;};const lbs=d.map(r=>fmtMonth(r.month));mChart=new Chart(document.getElementById('moC'),{data:{labels:lbs,datasets:[{type:'bar',label:'門市揀貨PCS',data:d.map(r=>r.pcs),backgroundColor:'#E8506A',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'業務銷售PCS/kg',data:d.map(r=>r.biz),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y',order:1},{type:'bar',label:'網路銷售PCS',data:d.map(r=>r.net),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y',order:1},{type:'line',label:'總工時',data:d.map(r=>r.hrs),borderColor:'#F5A623',backgroundColor:'#F5A623',pointBackgroundColor:'#F5A623',pointRadius:5,pointHoverRadius:7,borderWidth:2.5,tension:0.3,yAxisID:'y2',spanGaps:true,order:0}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null&&item.raw!==0,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:14},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:13},color:'#5C4A00',callback:v=>v>=10000?Math.round(v/10000)+'萬':v.toLocaleString()},title:{display:true,text:'PCS / kg',font:{size:12},color:'#5C4A00'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:13},color:'#F5A623'},title:{display:true,text:'總工時',font:{size:13},color:'#F5A623'}}}}});if(mChart2){mChart2.destroy();mChart2=null;}mChart2=new Chart(document.getElementById('moC2'),{data:{labels:lbs,datasets:[{type:'bar',label:'業務銷售單數',data:d.map(r=>r.bizOrd),backgroundColor:'#3B82F6',borderRadius:4,yAxisID:'y'},{type:'bar',label:'網路銷售單數',data:d.map(r=>r.netOrd),backgroundColor:'#22C55E',borderRadius:4,yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{filter:item=>item.raw!=null,callbacks:{label:c=>`${c.dataset.label}: ${Number(c.raw).toLocaleString()}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:14},color:'#5C4A00'}},y:{position:'left',grid:{color:'rgba(200,180,0,.15)'},ticks:{font:{size:13},color:'#5C4A00'},title:{display:true,text:'單數',font:{size:12},color:'#5C4A00'}}}}}); }
 // ── 促銷活動 ──
 function procPromo(rows){PROMO=rows.filter(r=>r[0]&&r[2]);buildPromo();}
 function buildPromo(){if(!PROMO.length){document.getElementById('promoL').innerHTML='<div style="text-align:center;padding:30px;color:#8B7000">無促銷活動資料</div>';return;}const today=new Date();const cur=String(today.getMonth()+1).padStart(2,'0')+String(today.getDate()).padStart(2,'0');const fmtD=str=>{const pts=String(str).trim().split(/[\/\-]/);if(pts.length>=3)return parseInt(pts[1])+'/'+parseInt(pts[2]);if(pts.length===2)return parseInt(pts[0])+'/'+parseInt(pts[1]);return String(str);};const toMD=str=>{const pts=String(str).trim().split(/[\/\-]/);let m,d;if(pts.length>=3){m=pts[1];d=pts[2];}else if(pts.length===2){m=pts[0];d=pts[1];}else return'';return String(parseInt(m)).padStart(2,'0')+String(parseInt(d)).padStart(2,'0');};document.getElementById('promoL').innerHTML=PROMO.map(p=>{const act=toMD(String(p[0]))<=cur&&toMD(String(p[1]))>=cur;return`<div class="pi" style="${act?'border-color:#C89B00;background:#FFF8CC':''}" ><div class="ph"><span class="pn" style="color:#AE0000">${p[2]}${act?'<span class="tag">進行中</span>':''}</span><span class="pd" style="color:#AE0000;font-weight:600">${fmtD(String(p[0]))}～${fmtD(String(p[1]))}</span></div><div class="pb2">${String(p[3]).replace(/\n/g,'<br>')}</div></div>`;}).join('');}
